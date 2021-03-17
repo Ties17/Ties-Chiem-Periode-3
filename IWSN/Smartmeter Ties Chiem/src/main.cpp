@@ -7,6 +7,10 @@
 #include <NTPClient.h>
 #include <WiFiUdp.h>
 
+#define P1_MAX_DATAGRAM_SIZE 1024
+char p1_buf[P1_MAX_DATAGRAM_SIZE]; // Complete P1 telegram
+char *p1;
+
 WiFiClient wifi;
 PubSubClient mqtt;
 SoftwareSerial p1;
@@ -18,7 +22,7 @@ DynamicJsonDocument doc(1024);
 char output[2048];
 
 SoftwareSerial link(D7, D3);
-char c;
+
 String buffer;
 
 void clearLed()
@@ -50,11 +54,12 @@ void connectMQTT()
   }
 }
 
-void setup() {
+void setup()
+{
 
-  pinMode(PIN_RED, OUTPUT); // green
+  pinMode(PIN_RED, OUTPUT);   // green
   pinMode(PIN_GREEN, OUTPUT); // blue
-  pinMode(PIN_BLUE, OUTPUT); // red
+  pinMode(PIN_BLUE, OUTPUT);  // red
 
   clearLed();
 
@@ -90,21 +95,60 @@ void setup() {
   clearLed();
 }
 
-void loop() {
+void p1_store(char c)
+{
+  if ((p1 - p1_buf) < P1_MAX_DATAGRAM_SIZE)
+  {
+    *p1 = c;
+    p1++;
+  }
+}
+
+void p1_reset()
+{
+  p1 = p1_buf;
+  *p1 = '\0';
+}
+
+bool waiting = true;
+
+void loop()
+{
   // put your main code here, to run repeatedly:
   ntp.update();
 
-  if (link.available()){
+  if (link.available())
+  {
     while (link.available())
     {
-      c = link.read();
+      char c = link.read();
+
+      if (c == '/')
+      {
+        waiting = false;
+        p1_reset();
+      }
+      p1_store(c);
+      if (c == '\n')
+      {
+        p1_store('\0');
+        waiting = true;
+      }
       // --- 7 bits instelling ---
       // c &= ~(1 << 7);
       // buffer += c;
-      Serial.print(c);
     }
   }
-  
+
+  if (!waiting)
+  {
+    digitalWrite(PIN_GREEN, LOW);
+  }
+  else
+  {
+    clearLed();
+    Serial.println(p1_buf);
+  }
 
   // JsonObject obj = doc.to<JsonObject>();
   // obj["MQTT_USER"] = MQTT_USER;
@@ -112,5 +156,4 @@ void loop() {
   // serializeJson(obj, output);
   // mqtt.publish(MQTT_TOPIC_DATA, output);
   // delay(10000);
-  
 }
