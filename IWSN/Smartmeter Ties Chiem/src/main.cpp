@@ -51,7 +51,6 @@ void connectMQTT()
 }
 
 void setup() {
-
   pinMode(PIN_RED, OUTPUT); // green
   pinMode(PIN_GREEN, OUTPUT); // blue
   pinMode(PIN_BLUE, OUTPUT); // red
@@ -81,7 +80,7 @@ void setup() {
   ntp.update();
 
   mqtt.setClient(wifi);    // Setup the MQTT client
-  mqtt.setBufferSize(256); // override MQTT_MAX_PACKET_SIZE
+  mqtt.setBufferSize(1024); // override MQTT_MAX_PACKET_SIZE
   mqtt.setServer(MQTT_SERVER, MQTT_PORT);
   connectMQTT();
 
@@ -100,17 +99,21 @@ void loop() {
       c = link.read();
       // --- 7 bits instelling ---
       // c &= ~(1 << 7);
-      // buffer += c;
-      Serial.print(c);
+      if (c == '/'){
+        buffer.clear();
+      }
+      if (c == '!')
+      {
+        buffer += c;
+        JsonObject obj = doc.to<JsonObject>();
+        obj["MQTT_USER"] = MQTT_USER;
+        obj["Time"] = ntp.getFormattedTime();
+        obj["Data"] = buffer;
+        serializeJson(obj, output);
+        mqtt.publish(MQTT_TOPIC_DATA, output);
+      }
+      buffer += c;
     }
   }
-  
-
-  // JsonObject obj = doc.to<JsonObject>();
-  // obj["MQTT_USER"] = MQTT_USER;
-  // obj["Time"] = ntp.getFormattedTime();
-  // serializeJson(obj, output);
-  // mqtt.publish(MQTT_TOPIC_DATA, output);
   // delay(10000);
-  
 }
