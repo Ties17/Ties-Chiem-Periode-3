@@ -50,10 +50,11 @@ void connectMQTT()
   }
 }
 
-void setup() {
-  pinMode(PIN_RED, OUTPUT); // green
+void setup()
+{
+  pinMode(PIN_RED, OUTPUT);   // green
   pinMode(PIN_GREEN, OUTPUT); // blue
-  pinMode(PIN_BLUE, OUTPUT); // red
+  pinMode(PIN_BLUE, OUTPUT);  // red
 
   clearLed();
 
@@ -77,9 +78,10 @@ void setup() {
   Serial.println(WiFi.localIP());
 
   ntp.begin();
-  ntp.update();
+  ntp.forceUpdate();
+  delay(1000);
 
-  mqtt.setClient(wifi);    // Setup the MQTT client
+  mqtt.setClient(wifi);     // Setup the MQTT client
   mqtt.setBufferSize(1024); // override MQTT_MAX_PACKET_SIZE
   mqtt.setServer(MQTT_SERVER, MQTT_PORT);
   connectMQTT();
@@ -89,28 +91,40 @@ void setup() {
   clearLed();
 }
 
-void loop() {
+void publishData()
+{
+  digitalWrite(PIN_BLUE, LOW);
+  JsonObject obj = doc.to<JsonObject>();
+  obj["MQTT_USER"] = MQTT_USER;
+  obj["Time"] = ntp.getFormattedTime();
+  obj["Data"] = buffer;
+  serializeJson(obj, output);
+  mqtt.publish(MQTT_TOPIC_DATA, output);
+  delay(10);
+  clearLed();
+}
+
+void loop()
+{
   // put your main code here, to run repeatedly:
   ntp.update();
 
-  if (link.available()){
+  if (link.available())
+  {
     while (link.available())
     {
       c = link.read();
       // --- 7 bits instelling ---
       // c &= ~(1 << 7);
-      if (c == '/'){
+      if (c == '/')
+      {
         buffer.clear();
       }
       if (c == '!')
       {
         buffer += c;
-        JsonObject obj = doc.to<JsonObject>();
-        obj["MQTT_USER"] = MQTT_USER;
-        obj["Time"] = ntp.getFormattedTime();
-        obj["Data"] = buffer;
-        serializeJson(obj, output);
-        mqtt.publish(MQTT_TOPIC_DATA, output);
+        publishData();
+        Serial.print(buffer);
       }
       buffer += c;
     }
