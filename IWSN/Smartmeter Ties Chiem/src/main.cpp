@@ -40,7 +40,7 @@ void connectMQTT()
       Serial.println("MQTT Connected");
       JsonObject obj = doc.to<JsonObject>();
       obj["MQTT_USER"] = MQTT_USER;
-      obj["Time"] = ntp.getFormattedTime();
+      obj["Time"] = ntp.getEpochTime();
       serializeJson(obj, output);
       mqtt.publish(MQTT_TOPIC_LOGIN, output);
       clearLed();
@@ -82,7 +82,7 @@ void setup()
   delay(1000);
 
   mqtt.setClient(wifi);     // Setup the MQTT client
-  mqtt.setBufferSize(1024); // override MQTT_MAX_PACKET_SIZE
+  mqtt.setBufferSize(2048); // override MQTT_MAX_PACKET_SIZE
   mqtt.setServer(MQTT_SERVER, MQTT_PORT);
   connectMQTT();
 
@@ -96,7 +96,7 @@ void publishData()
   digitalWrite(PIN_BLUE, LOW);
   JsonObject obj = doc.to<JsonObject>();
   obj["MQTT_USER"] = MQTT_USER;
-  obj["Time"] = ntp.getFormattedTime();
+  obj["Time"] = ntp.getEpochTime();
   obj["Data"] = buffer;
   serializeJson(obj, output);
   mqtt.publish(MQTT_TOPIC_DATA, output);
