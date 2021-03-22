@@ -14,16 +14,21 @@ client.connect(function (err) {
     mqtt.subscribe(["SMARTMETER-TIES-CHIEM-DATA", "SMARTMETER-TIES-CHIEM-LOGIN"], console.log)
     const db = client.db(dbName)
     const login = db.collection("login")
-    const data = db.collection("data")
+    const smartmeterdata = db.collection("smartmeterdata")
+    const sensordata = db.collection("sensordata")
     mqtt.on("message", function (topic, message) {
         try {
             var doc = JSON.parse(message)
             if (doc['MQTT_USER'].match('SMARTMETER') != null) {
                 doc = parseDataToJson(doc);
             }
-
             if (topic == "SMARTMETER-TIES-CHIEM-DATA") {
-                data.insertOne(doc)
+                if (doc['MQTT_USER'].match('SMARTMETER')){
+                    smartmeterdata.insertOne(doc)
+                }
+                if (doc['MQTT_USER'].match('SENSORDATA')){
+                    sensordata.insertOne(doc)
+                }
             }
             if (topic == "SMARTMETER-TIES-CHIEM-LOGIN") {
                 login.insertOne(doc)
