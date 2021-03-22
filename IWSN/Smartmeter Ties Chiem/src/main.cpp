@@ -9,7 +9,6 @@
 
 WiFiClient wifi;
 PubSubClient mqtt;
-SoftwareSerial p1;
 
 WiFiUDP udp;
 NTPClient ntp(udp, "pool.ntp.org", 3600);
@@ -17,9 +16,19 @@ NTPClient ntp(udp, "pool.ntp.org", 3600);
 DynamicJsonDocument doc(1024);
 char output[2048];
 
-SoftwareSerial link(D7, D3);
-char c;
-String buffer;
+//SoftwareSerial link(D7, D3);
+#define P1_MAX_DATAGRAM_SIZE 1024
+char p1_buf[P1_MAX_DATAGRAM_SIZE]; // Complete P1 telegram
+char *p1;
+
+// P1 statemachine
+typedef enum
+{
+  P1_MSG_S0,
+  P1_MSG_S1,
+  P1_MSG_S2
+} ENUM_P1_MSG_STATE;
+ENUM_P1_MSG_STATE p1_msg_state = P1_MSG_S0;
 
 void clearLed()
 {
@@ -59,7 +68,6 @@ void setup()
   clearLed();
 
   Serial.begin(9600);
-  link.begin(115200, SWSERIAL_8N1);
 
   WiFi.begin(WIFI_SSID, WIFI_PASS); // Connect to the Wi-Fi (if not known use WifiManager from tzapu!)
   Serial.print("Setup Wi-Fi:");
@@ -79,12 +87,17 @@ void setup()
 
   ntp.begin();
   ntp.forceUpdate();
-  delay(1000);
+  delay(5000);
 
   mqtt.setClient(wifi);     // Setup the MQTT client
   mqtt.setBufferSize(2048); // override MQTT_MAX_PACKET_SIZE
   mqtt.setServer(MQTT_SERVER, MQTT_PORT);
   connectMQTT();
+
+  Serial.flush();
+  Serial.begin(115200, SERIAL_8N1);
+  delay(2000);
+  Serial.swap();
 
   digitalWrite(PIN_GREEN, LOW);
   delay(2000);
@@ -97,11 +110,79 @@ void publishData()
   JsonObject obj = doc.to<JsonObject>();
   obj["MQTT_USER"] = MQTT_USER;
   obj["Time"] = ntp.getEpochTime();
-  obj["Data"] = buffer;
+  obj["Data"] = p1_buf;
   serializeJson(obj, output);
   mqtt.publish(MQTT_TOPIC_DATA, output);
   delay(10);
   clearLed();
+}
+
+void p1_store(char ch)
+{
+  if ((p1 - p1_buf) < P1_MAX_DATAGRAM_SIZE)
+  {
+    *p1 = ch;
+    p1++;
+  }
+}
+
+void p1_reset()
+{
+  p1 = p1_buf;
+  *p1 = '\0';
+}
+
+
+bool capture_p1()
+{
+  bool retval = false;
+
+  if (Serial.available())
+  {
+    while (Serial.available())
+    {
+      char ch = Serial.read();
+      switch (p1_msg_state)
+      {
+
+      //
+      case P1_MSG_S0:
+        if (ch == '/')
+        {
+          p1_msg_state = P1_MSG_S1;
+          p1_reset();
+          p1_store(ch);
+        }
+        break;
+
+      //
+      case P1_MSG_S1:
+        p1_store(ch);
+        if (ch == '!')
+        {
+          p1_msg_state = P1_MSG_S2;
+        }
+        break;
+
+      //
+      case P1_MSG_S2:
+        p1_store(ch);
+        if (ch == '\n')
+        {
+          p1_store('\0'); // Add 0 terminator
+          p1_msg_state = P1_MSG_S0;
+          retval = true;
+        }
+        break;
+
+      //
+      default:
+        retval = false;
+        break;
+      }
+    }
+  }
+  return retval;
 }
 
 void loop()
@@ -109,25 +190,9 @@ void loop()
   // put your main code here, to run repeatedly:
   ntp.update();
 
-  if (link.available())
-  {
-    while (link.available())
-    {
-      c = link.read();
-      // --- 7 bits instelling ---
-      // c &= ~(1 << 7);
-      if (c == '/')
-      {
-        buffer.clear();
-      }
-      if (c == '!')
-      {
-        buffer += c;
-        publishData();
-        Serial.print(buffer);
-      }
-      buffer += c;
-    }
+  if(capture_p1() == true){
+    publishData();
+    // Serial.println(p1_buf);
   }
   // delay(10000);
 }
