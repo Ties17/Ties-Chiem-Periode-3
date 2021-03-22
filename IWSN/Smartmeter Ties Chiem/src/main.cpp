@@ -9,7 +9,6 @@
 
 WiFiClient wifi;
 PubSubClient mqtt;
-SoftwareSerial p1;
 
 WiFiUDP udp;
 NTPClient ntp(udp, "pool.ntp.org", 3600);
@@ -18,8 +17,18 @@ DynamicJsonDocument doc(1024);
 char output[2048];
 
 SoftwareSerial link(D7, D3);
-char c;
-String buffer;
+#define P1_MAX_DATAGRAM_SIZE 1024
+char p1_buf[P1_MAX_DATAGRAM_SIZE]; // Complete P1 telegram
+char *p1;
+
+// P1 statemachine
+typedef enum
+{
+  P1_MSG_S0,
+  P1_MSG_S1,
+  P1_MSG_S2
+} ENUM_P1_MSG_STATE;
+ENUM_P1_MSG_STATE p1_msg_state = P1_MSG_S0;
 
 void clearLed()
 {
@@ -97,11 +106,79 @@ void publishData()
   JsonObject obj = doc.to<JsonObject>();
   obj["MQTT_USER"] = MQTT_USER;
   obj["Time"] = ntp.getEpochTime();
-  obj["Data"] = buffer;
+  obj["Data"] = p1_buf;
   serializeJson(obj, output);
   mqtt.publish(MQTT_TOPIC_DATA, output);
   delay(10);
   clearLed();
+}
+
+void p1_store(char ch)
+{
+  if ((p1 - p1_buf) < P1_MAX_DATAGRAM_SIZE)
+  {
+    *p1 = ch;
+    p1++;
+  }
+}
+
+void p1_reset()
+{
+  p1 = p1_buf;
+  *p1 = '\0';
+}
+
+
+bool capture_p1()
+{
+  bool retval = false;
+
+  if (Serial.available())
+  {
+    while (Serial.available())
+    {
+      char ch = Serial.read();
+      switch (p1_msg_state)
+      {
+
+      //
+      case P1_MSG_S0:
+        if (ch == '/')
+        {
+          p1_msg_state = P1_MSG_S1;
+          p1_reset();
+          p1_store(ch);
+        }
+        break;
+
+      //
+      case P1_MSG_S1:
+        p1_store(ch);
+        if (ch == '!')
+        {
+          p1_msg_state = P1_MSG_S2;
+        }
+        break;
+
+      //
+      case P1_MSG_S2:
+        p1_store(ch);
+        if (ch == '\n')
+        {
+          p1_store('\0'); // Add 0 terminator
+          p1_msg_state = P1_MSG_S0;
+          retval = true;
+        }
+        break;
+
+      //
+      default:
+        retval = false;
+        break;
+      }
+    }
+  }
+  return retval;
 }
 
 void loop()
@@ -109,25 +186,9 @@ void loop()
   // put your main code here, to run repeatedly:
   ntp.update();
 
-  if (link.available())
-  {
-    while (link.available())
-    {
-      c = link.read();
-      // --- 7 bits instelling ---
-      // c &= ~(1 << 7);
-      if (c == '/')
-      {
-        buffer.clear();
-      }
-      if (c == '!')
-      {
-        buffer += c;
-        publishData();
-        Serial.print(buffer);
-      }
-      buffer += c;
-    }
+  if(capture_p1() == true){
+    publishData();
+    Serial.println(p1_buf);
   }
   // delay(10000);
 }
