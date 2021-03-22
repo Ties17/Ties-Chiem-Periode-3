@@ -16,7 +16,7 @@ NTPClient ntp(udp, "pool.ntp.org", 3600);
 DynamicJsonDocument doc(1024);
 char output[2048];
 
-SoftwareSerial link(D7, D3);
+//SoftwareSerial link(D7, D3);
 #define P1_MAX_DATAGRAM_SIZE 1024
 char p1_buf[P1_MAX_DATAGRAM_SIZE]; // Complete P1 telegram
 char *p1;
@@ -68,7 +68,6 @@ void setup()
   clearLed();
 
   Serial.begin(9600);
-  link.begin(115200, SWSERIAL_8N1);
 
   WiFi.begin(WIFI_SSID, WIFI_PASS); // Connect to the Wi-Fi (if not known use WifiManager from tzapu!)
   Serial.print("Setup Wi-Fi:");
@@ -88,12 +87,17 @@ void setup()
 
   ntp.begin();
   ntp.forceUpdate();
-  delay(1000);
+  delay(5000);
 
   mqtt.setClient(wifi);     // Setup the MQTT client
   mqtt.setBufferSize(2048); // override MQTT_MAX_PACKET_SIZE
   mqtt.setServer(MQTT_SERVER, MQTT_PORT);
   connectMQTT();
+
+  Serial.flush();
+  Serial.begin(115200, SERIAL_8N1);
+  delay(2000);
+  Serial.swap();
 
   digitalWrite(PIN_GREEN, LOW);
   delay(2000);
@@ -188,7 +192,7 @@ void loop()
 
   if(capture_p1() == true){
     publishData();
-    Serial.println(p1_buf);
+    // Serial.println(p1_buf);
   }
   // delay(10000);
 }
