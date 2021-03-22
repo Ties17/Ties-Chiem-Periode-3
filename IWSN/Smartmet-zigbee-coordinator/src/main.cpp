@@ -32,10 +32,11 @@ String parseValuesToJson(String incoming) {
 
   StaticJsonDocument<128> doc;
 
+  doc["MQTT_USER"] = MQTT_USER;
   doc["temperature"] = temp.toFloat();
   doc["humidity"] = hum.toFloat();
   doc["brightness"] = bright.toInt();
-  doc["timesend"] = ntp.getEpochTime();
+  doc["Time"] = ntp.getEpochTime();
 
   ssh.println(ntp.getEpochTime());
 
@@ -50,7 +51,7 @@ void connectMQTT(){
 
     if(mqtt.connected()){
       Serial.println("MQTT Connected");
-      mqtt.publish(MQTT_SUBSCRIBE, "Wemos Connected!");
+      mqtt.publish(MQTT_SUBSCRIBE_LOGIN, "Wemos Connected!");
       break;
     }
   }
@@ -100,7 +101,7 @@ void loop() {
           message += (char)xbeeFrameData[i];
         }
         message = parseValuesToJson(message);
-        mqtt.publish(MQTT_SUBSCRIBE, message.c_str());
+        mqtt.publish(MQTT_SUBSCRIBE_DATA, message.c_str());
         ssh.println(message);
       } 
     }
