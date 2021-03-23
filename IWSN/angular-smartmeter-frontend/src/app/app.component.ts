@@ -8,7 +8,5 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'angular-smartmeter-frontend';
 
-  helloWorld() {
-    alert('Hello world!');
-  }
+  
 }
