@@ -5,7 +5,7 @@
 #define DHTPIN 4
 #define DHTTYPE DHT11   
 
-#define TEMPPIN 1
+#define TEMPPIN A5
 #define BRIGHTNESS A0
 
 DHT dht(DHTPIN, DHTTYPE);
@@ -22,20 +22,27 @@ void loop()
 {
   delay(10000);
 
+  analogRead(TEMPPIN);
+  delay(10);
   int val = analogRead(TEMPPIN);
   //convert temperature value to celcius
   float mv = ( val/1024.0)*5000;
   float cel = mv/10;
 
-  float hum = dht.readHumidity();
+  Serial.println(cel);
 
+  float hum = dht.readHumidity();
+  Serial.println(hum);
   // Check if any reads failed and exit early (to try again).
   if (isnan(hum)) {
     Serial.println(F("Failed to read from DHT sensor!"));
     hum = -1;
   }
 
+  analogRead(BRIGHTNESS);
+  delay(10);
   int brightness = analogRead(BRIGHTNESS);
+  Serial.println(brightness);
 
   char tempStr[8];
   strcpy(tempStr, "");
