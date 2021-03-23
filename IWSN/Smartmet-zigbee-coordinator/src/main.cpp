@@ -23,7 +23,8 @@ SoftwareSerial ssh(TX, RX);
 WiFiClient client;
 PubSubClient mqtt;
 
-String parseValuesToJson(String incoming) {
+String parseValuesToJson(String incoming)
+{
 
   //use delimiter (-) to receive values from xbee message
   String temp = incoming.substring(0, incoming.indexOf('-'));
@@ -45,19 +46,28 @@ String parseValuesToJson(String incoming) {
   return output;
 }
 
-void connectMQTT(){
-  while(!mqtt.connected()){
-    mqtt.connect(MQTT_TOPIC);
+void connectMQTT()
+{
+  while (!mqtt.connected())
+  {
+    mqtt.connect(MQTT_USER);
 
-    if(mqtt.connected()){
+    if (mqtt.connected())
+    {
       Serial.println("MQTT Connected");
-      mqtt.publish(MQTT_SUBSCRIBE_LOGIN, "Wemos Connected!");
+      StaticJsonDocument<128> doc;
+      doc["MQTT_USER"] = MQTT_USER;
+      doc["Time"] = ntp.getEpochTime();
+      String output;
+      serializeJson(doc, output);
+      mqtt.publish(MQTT_SUBSCRIBE_LOGIN, output.c_str());
       break;
     }
   }
 }
 
-void setup() {
+void setup()
+{
   //start serial
   ssh.begin(9600);
   xbee.begin(ssh);
@@ -77,7 +87,7 @@ void setup() {
 
   ntp.begin();
   ntp.forceUpdate();
-  delay(1000);
+  delay(5000);
 
   mqtt.setClient(client);  // Setup the MQTT client
   mqtt.setBufferSize(256); // override MQTT_MAX_PACKET_SIZE
@@ -85,24 +95,28 @@ void setup() {
   connectMQTT();
 }
 
-void loop() {
-    ntp.update();
+void loop()
+{
+  ntp.update();
 
-    xbee.readPacket();
-    
-    if (xbee.getResponse().isAvailable()) {
-      if (xbee.getResponse().getApiId() == ZB_RX_RESPONSE) {
-        xbee.getResponse().getZBRxResponse(rx);
+  xbee.readPacket();
 
-        uint8_t* xbeeFrameData = rx.getFrameData();
-        int xbeeFrameDataLength = rx.getFrameDataLength();
-        String message = "";
-        for (int i = 11; i < xbeeFrameDataLength; i++) {
-          message += (char)xbeeFrameData[i];
-        }
-        message = parseValuesToJson(message);
-        mqtt.publish(MQTT_SUBSCRIBE_DATA, message.c_str());
-        ssh.println(message);
-      } 
+  if (xbee.getResponse().isAvailable())
+  {
+    if (xbee.getResponse().getApiId() == ZB_RX_RESPONSE)
+    {
+      xbee.getResponse().getZBRxResponse(rx);
+
+      uint8_t *xbeeFrameData = rx.getFrameData();
+      int xbeeFrameDataLength = rx.getFrameDataLength();
+      String message = "";
+      for (int i = 11; i < xbeeFrameDataLength; i++)
+      {
+        message += (char)xbeeFrameData[i];
+      }
+      message = parseValuesToJson(message);
+      mqtt.publish(MQTT_SUBSCRIBE_DATA, message.c_str());
+      ssh.println(message);
     }
+  }
 }
