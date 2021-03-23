@@ -1,0 +1,60 @@
+<dx-chart id="chart"
+    [dataSource]="dataSource"
+    title="Verbruik per week"
+    palette="Harmony Light">
+    <dxi-value-axis name="kwh" position="left" [tickInterval]="300"></dxi-value-axis>
+    <dxi-value-axis name="cost" position="right" [showZero]="true" [tickInterval]="1" [valueMarginsEnabled]="false"></dxi-value-axis>
+    <dxo-argument-axis>
+        <dxo-label overlappingBehavior="stagger"></dxo-label>
+    </dxo-argument-axis>
+    <dxo-tooltip 
+        [enabled]="true"
+        [shared]="true"
+        [customizeTooltip]="customizeTooltipGraph">
+    </dxo-tooltip>
+    <dxo-common-series-settings 
+        argumentField="day">
+    </dxo-common-series-settings>
+    <dxi-series 
+        type="bar"
+        valueField="kwh"
+        axis="kwh"
+        name="KwH"
+        color="#fac29a">
+    </dxi-series>
+    <dxi-series 
+        type="spline"
+        valueField="cost"
+        axis="cost"
+        name="Kosten"
+        color="#6b71c3">
+    </dxi-series>
+    <dxo-legend 
+        verticalAlignment="top"
+        horizontalAlignment="center">
+    </dxo-legend>
+</dx-chart>
+
+<dx-pie-chart
+    id="pie"
+    type="doughnut"
+    title="Current usage"
+    palette="Soft Pastel"
+    [dataSource]="currentUsageDataSource">
+    <dxi-series
+        argumentField="usage">
+        <dxo-label
+            [visible]="true">
+            <dxo-connector [visible]="true"></dxo-connector>
+        </dxo-label>
+    </dxi-series>
+    <dxo-legend
+        [margin]="0"
+        horizontalAlignment="right"
+        verticalAlignment="top">
+    </dxo-legend>
+    <dxo-tooltip
+        [enabled]="true"
+        [customizeTooltip]="customizeTooltipDonut">
+    </dxo-tooltip>
+</dx-pie-chart>

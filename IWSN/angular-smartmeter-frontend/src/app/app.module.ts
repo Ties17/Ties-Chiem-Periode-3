@@ -4,16 +4,20 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-import { DxButtonModule } from 'devextreme-angular/ui/button';
+import { HomeComponent } from './home/home.component';
+import { DxChartModule } from 'devextreme-angular/ui/chart';
+import { DxPieChartModule } from 'devextreme-angular';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    DxButtonModule,
+    DxChartModule,
+    DxPieChartModule
   ],
   providers: [],
   bootstrap: [AppComponent]
