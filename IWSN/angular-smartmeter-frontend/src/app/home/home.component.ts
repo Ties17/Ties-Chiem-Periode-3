@@ -1,5 +1,6 @@
 import { PercentPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { ApiserviceService } from '../apiservice.service';
 import { SmartmeterData } from '../Models/SmartMeterData';
 
 @Component({
@@ -14,9 +15,13 @@ export class HomeComponent implements OnInit {
   dataSource: TempSmartmeterData[];
   currentUsageDataSource: number;
 
-  constructor() {
+  constructor(apiService: ApiserviceService) {
 
     this.currentUsageDataSource = 1000;
+
+    apiService.getLastSmartMeterRecord().subscribe(value => {
+      console.log(value);
+    })
 
     this.dataSource = [
       { day: "dag 1", kwh: 1800, cost: 3 },
