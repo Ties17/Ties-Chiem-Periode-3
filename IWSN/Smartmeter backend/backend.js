@@ -93,9 +93,9 @@ function obisRefSwitchTable(code) {
         case '0-0:96.14.0':
             return "Tariff_indicator_elextricity"
         case '1-0:1.7.0':
-            return "Actual_electricity_power_delivered_+P"
+            return "Actual_electricity_power_delivered_plus"
         case '1-0:2.7.0':
-            return "Actual_electricity_power_received_-P"
+            return "Actual_electricity_power_received_min"
         case '0-0:96.7.21':
             return "Number_of_power_failures"
         case '0-0:96.7.9':
@@ -123,17 +123,17 @@ function obisRefSwitchTable(code) {
         case '1-0:71.7.0':
             return "Instantaneous_current_L3"
         case '1-0:21.7.0':
-            return "Instantaneous_active_power_L1_+P"
+            return "Instantaneous_active_power_L1_plus"
         case '1-0:41.7.0':
-            return "Instantaneous_active_power_L2_+P"
+            return "Instantaneous_active_power_L2_plus"
         case '1-0:61.7.0':
-            return "Instantaneous_active_power_L3_+P"
+            return "Instantaneous_active_power_L3_plus"
         case '1-0:22.7.0':
-            return "Instantaneous_active_power_L1_-P"
+            return "Instantaneous_active_power_L1_min"
         case '1-0:42.7.0':
-            return "Instantaneous_active_power_L2_-P"
+            return "Instantaneous_active_power_L2_min"
         case '1-0:62.7.0':
-            return "Instantaneous_active_power_L3_-P"
+            return "Instantaneous_active_power_L3_min"
         case '0-1:24.1.0':
             return "Device_Type"
         case '0-1:96.1.0':
