@@ -19,20 +19,21 @@ client.connect(function (err) {
     mqtt.on("message", function (topic, message) {
         try {
             var doc = JSON.parse(message)
-            if (doc['MQTT_USER'].match('SMARTMETER') != null) {
-                doc = parseDataToJson(doc);
-            }
-            if (topic == "SMARTMETER-TIES-CHIEM-DATA") {
-                if (doc['MQTT_USER'].match('SMARTMETER')){
-                    smartmeterdata.insertOne(doc)
-                }
-                if (doc['MQTT_USER'].match('SENSORDATA')){
-                    sensordata.insertOne(doc)
-                }
-            }
             if (topic == "SMARTMETER-TIES-CHIEM-LOGIN") {
                 login.insertOne(doc)
-            }
+            }else {
+                if (doc['MQTT_USER'].match('SMARTMETER') != null) {
+                    doc = parseDataToJson(doc);
+                }
+                if (topic == "SMARTMETER-TIES-CHIEM-DATA") {
+                    if (doc['MQTT_USER'].match('SMARTMETER')) {
+                        smartmeterdata.insertOne(doc)
+                    }
+                    if (doc['MQTT_USER'].match('SENSORDATA')) {
+                        sensordata.insertOne(doc)
+                    }
+                }
+            }            
         } catch (error) {
             console.error(error)
         }
