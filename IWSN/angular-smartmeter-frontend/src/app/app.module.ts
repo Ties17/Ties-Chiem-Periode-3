@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 
 import { HomeComponent } from './home/home.component';
 import { DxChartModule } from 'devextreme-angular/ui/chart';
-import { DxPieChartModule } from 'devextreme-angular';
+import { DxCircularGaugeModule, DxPieChartModule } from 'devextreme-angular';
 
 @NgModule({
   declarations: [
@@ -17,7 +17,8 @@ import { DxPieChartModule } from 'devextreme-angular';
     BrowserModule,
     AppRoutingModule,
     DxChartModule,
-    DxPieChartModule
+    DxPieChartModule,
+    DxCircularGaugeModule
   ],
   providers: [],
   bootstrap: [AppComponent]

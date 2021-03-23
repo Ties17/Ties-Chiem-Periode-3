@@ -12,14 +12,11 @@ export class HomeComponent implements OnInit {
   pipe: any = new PercentPipe("en-US");
 
   dataSource: TempSmartmeterData[];
-  currentUsageDataSource: CurrentSmartmeterData[];
+  currentUsageDataSource: number;
 
   constructor() {
 
-    this.currentUsageDataSource = [
-      { usage: "In use", val: 1000, color: "#008000"},
-      { usage: "Not in use", val: (3000 - 1000), color: "#2E8B57"}
-    ];
+    this.currentUsageDataSource = 1000;
 
     this.dataSource = [
       { day: "dag 1", kwh: 1800, cost: 3 },
@@ -58,12 +55,6 @@ export class HomeComponent implements OnInit {
 
 class TempSmartmeterData {
   day: string | undefined;
-  kwh: string | undefined;
+  kwh: number | undefined;
   cost: number | undefined;
-}
-
-class CurrentSmartmeterData {
-  usage: string | undefined;
-  val: number | undefined;
-  color: string | undefined;
 }
