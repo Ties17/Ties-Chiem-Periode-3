@@ -38,14 +38,14 @@
 <dx-circular-gauge id="gauge" [value]="currentUsageDataSource">
     <dxo-scale
         [startValue]="0"
-        [endValue]="2000"
+        [endValue]="5000"
         [tickInterval]="10">
         <dxo-label [useRangeColors]="true"></dxo-label>
     </dxo-scale>
     <dxo-range-container palette="pastel">
         <dxi-range [startValue]="0" [endValue]="300"></dxi-range>
         <dxi-range [startValue]="300" [endValue]="800"></dxi-range>
-        <dxi-range [startValue]="800" [endValue]="2000"></dxi-range>
+        <dxi-range [startValue]="800" [endValue]="5000"></dxi-range>
     </dxo-range-container>
     <dxo-title text="Current energy use">
         <dxo-font [size]="28"></dxo-font>

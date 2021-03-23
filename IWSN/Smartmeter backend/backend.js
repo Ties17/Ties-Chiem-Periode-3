@@ -16,6 +16,7 @@ client.connect(function (err) {
     const login = db.collection("login")
     const smartmeterdata = db.collection("smartmeterdata")
     const sensordata = db.collection("sensordata")
+    const powerdata = db.collection("powerdata")
     mqtt.on("message", function (topic, message) {
         try {
             var doc = JSON.parse(message)
@@ -28,6 +29,12 @@ client.connect(function (err) {
                 if (topic == "SMARTMETER-TIES-CHIEM-DATA") {
                     if (doc['MQTT_USER'].match('SMARTMETER')) {
                         smartmeterdata.insertOne(doc)
+
+                        var powerdoc = {}
+                        powerdoc['MQTT_USER'] = doc['MQTT_USER']
+                        powerdoc['Time'] = doc['Time']
+                        powerdoc['Actual_electricity_power_delivered_plus'] = doc['Actual_electricity_power_delivered_plus']
+                        powerdata.insertOne(powerdoc)
                     }
                     if (doc['MQTT_USER'].match('SENSORDATA')) {
                         sensordata.insertOne(doc)
