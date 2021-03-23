@@ -7,6 +7,7 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { DxChartModule } from 'devextreme-angular/ui/chart';
 import { DxCircularGaugeModule, DxPieChartModule } from 'devextreme-angular';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { DxCircularGaugeModule, DxPieChartModule } from 'devextreme-angular';
     AppRoutingModule,
     DxChartModule,
     DxPieChartModule,
-    DxCircularGaugeModule
+    DxCircularGaugeModule,
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
