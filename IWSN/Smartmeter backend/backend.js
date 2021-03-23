@@ -83,63 +83,63 @@ function obisRefSwitchTable(code) {
         case '0-0:96.1.1':
             return "Equipment_id"
         case '1-0:1.8.1':
-            return "electricity_delivered_to_client_(tariff_1)_in_0,001kWh"
+            return "electricity_delivered_to_client_tariff_1"
         case '1-0:1.8.2':
-            return "electricity_delivered_to_client_(tariff_2)_in_0,001kWh"
+            return "electricity_delivered_to_client_tariff_2"
         case '1-0:2.8.1':
-            return "electricity_delivered_by_client_(tariff_1)_in_0,001kWh"
+            return "electricity_delivered_by_client_tariff_1"
         case '1-0:2.8.2':
-            return "electricity_delivered_by_client_(tariff_2)_in_0,001kWh"
+            return "electricity_delivered_by_client_tariff_2"
         case '0-0:96.14.0':
             return "Tariff_indicator_elextricity"
         case '1-0:1.7.0':
-            return "Actual_electricity_power_delivered_(+P)_in_1_watt_resolution"
+            return "Actual_electricity_power_delivered_+P"
         case '1-0:2.7.0':
-            return "Actual_electricity_power_received_(-P)_in_1_Watt_resolution"
+            return "Actual_electricity_power_received_-P"
         case '0-0:96.7.21':
-            return "Number_of_power_failures_in_any_phase"
+            return "Number_of_power_failures"
         case '0-0:96.7.9':
-            return "Number_of_long_power_failures_in_any_phase"
+            return "Number_of_long_power_failures"
         case '1-0:99.97.0':
-            return "Power_Failure_Event_Log_(long_power_failures)"
+            return "Power_Failure_Event_Log"
         case '1-0:32.32.0':
-            return "Number_of_voltage_sags_in_phase_L1"
+            return "Number_of_voltage_sags_L1"
         case '1-0:52.32.0':
-            return "Number_of_voltage_sags_in_phase_L2"
+            return "Number_of_voltage_sags_L2"
         case '1-0:72.32.0':
-            return "Number_of_voltage_sags_in_phase_L3"
+            return "Number_of_voltage_sags_L3"
         case '1-0:32.36.0':
-            return "Number_of_voltage_swells_in_phase_L1"
+            return "Number_of_voltage_swells_L1"
         case '1-0:52.36.0':
-            return "Number_of_voltage_swells_in_phase_L2"
+            return "Number_of_voltage_swells_L2"
         case '1-0:72.36.0':
-            return "Number_of_voltage_swells_in_phase_L3"
+            return "Number_of_voltage_swells_L3"
         case '0-0:96.13.0':
             return "Text_message_max_1024_characters"
         case '1-0:31.7.0':
-            return "Instantaneous_current_L1_in_A_resolution"
+            return "Instantaneous_current_L1"
         case '1-0:51.7.0':
-            return "Instantaneous_current_L2_in_A_resolution"
+            return "Instantaneous_current_L2"
         case '1-0:71.7.0':
-            return "Instantaneous_current_L3_in_A_resolution"
+            return "Instantaneous_current_L3"
         case '1-0:21.7.0':
-            return "Instantaneous_active_power_L1_(+P)_in_W_resolution"
+            return "Instantaneous_active_power_L1_+P"
         case '1-0:41.7.0':
-            return "Instantaneous_active_power_L2_(+P)_in_W_resolution"
+            return "Instantaneous_active_power_L2_+P"
         case '1-0:61.7.0':
-            return "Instantaneous_active_power_L3_(+P)_in_W_resolution"
+            return "Instantaneous_active_power_L3_+P"
         case '1-0:22.7.0':
-            return "Instantaneous_active_power_L1_(-P)_in_W_resolution"
+            return "Instantaneous_active_power_L1_-P"
         case '1-0:42.7.0':
-            return "Instantaneous_active_power_L2_(-P)_in_W_resolution"
+            return "Instantaneous_active_power_L2_-P"
         case '1-0:62.7.0':
-            return "Instantaneous_active_power_L3_(-P)_in_W_resolution"
+            return "Instantaneous_active_power_L3_-P"
         case '0-1:24.1.0':
-            return "Device-Type"
+            return "Device_Type"
         case '0-1:96.1.0':
-            return "Equipment_id_(Water)"
+            return "Equipment_id_Water"
         case '0-1:24.2.1':
-            return "Last_5_minute_Meter_reading_in_0,001_m3_and_capture_time"
+            return "Last_5_minute_Meter_reading"
         default:
             return null
     }
