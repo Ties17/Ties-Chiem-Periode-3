@@ -132,7 +132,6 @@ void p1_reset()
   *p1 = '\0';
 }
 
-
 bool capture_p1()
 {
   bool retval = false;
@@ -190,7 +189,13 @@ void loop()
   // put your main code here, to run repeatedly:
   ntp.update();
 
-  if(capture_p1() == true){
+  if (!mqtt.connected())
+  {
+    connectMQTT();
+  }
+
+  if (capture_p1() == true)
+  {
     publishData();
     // Serial.println(p1_buf);
   }
