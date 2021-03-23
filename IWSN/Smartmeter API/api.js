@@ -42,6 +42,19 @@ app.get('/smartmeter/dataByTime', (req, res) => {
     })
 })
 
+app.get('/smartmeter/getLast', (req, res) => {
+    client.connect(function (err) {
+        assert.strictEqual(null, err)
+        const db = client.db(dbName)
+        const data = db.collection("smartmeterdata")
+        var query = {}
+        data.find(query).sort('Time', -1).limit(1).toArray((function (err, result) {
+            if (err) throw err
+            res.send(result)
+        }))
+    })
+})
+
 //////////////////////////////////////////
 //          SENSORS SECTION             //
 //////////////////////////////////////////
@@ -72,6 +85,21 @@ app.get('/sensors/dataByTime', (req, res) => {
     })
 })
 
+
+app.get('/sensors/getLast', (req, res) => {
+    client.connect(function (err) {
+        assert.strictEqual(null, err)
+        const db = client.db(dbName)
+        const data = db.collection("sensordata")
+        var query = {}
+        data.find(query).sort('Time', -1).limit(1).toArray((function(err, result) {
+            if(err) throw err
+            res.send(result)
+        }))
+    })
+})
+
+
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
-})
+}) 
