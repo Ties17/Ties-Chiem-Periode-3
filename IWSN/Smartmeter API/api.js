@@ -22,8 +22,8 @@ app.get('/smartmeter/allData', (req, res) => {
         const db = client.db(dbName)
         const data = db.collection("smartmeterdata")
         var query = {}
-        data.find(query).toArray((function(err, result) {
-            if(err) throw err
+        data.find(query).toArray((function (err, result) {
+            if (err) throw err
             res.send(result)
         }))
     })
@@ -34,7 +34,7 @@ app.get('/smartmeter/dataByTime', (req, res) => {
         assert.strictEqual(null, err)
         const db = client.db(dbName)
         const data = db.collection("smartmeterdata")
-        var query = { Time: {$gt: req.body['Time'] }}
+        var query = { Time: { $gt: req.body['Time'] } }
         data.find(query).toArray((function (err, result) {
             if (err) throw err
             res.send(result)
@@ -65,8 +65,8 @@ app.get('/sensors/allData', (req, res) => {
         const db = client.db(dbName)
         const data = db.collection("sensordata")
         var query = {}
-        data.find(query).toArray((function(err, result) {
-            if(err) throw err
+        data.find(query).toArray((function (err, result) {
+            if (err) throw err
             res.send(result)
         }))
     })
@@ -77,9 +77,9 @@ app.get('/sensors/dataByTime', (req, res) => {
         assert.strictEqual(null, err)
         const db = client.db(dbName)
         const data = db.collection("sensordata")
-        var query = { Time: {$gt: req.body['Time']}}
-        data.find(query).toArray((function(err, result) {
-            if(err) throw err
+        var query = { Time: { $gt: req.body['Time'] } }
+        data.find(query).toArray((function (err, result) {
+            if (err) throw err
             res.send(result)
         }))
     })
@@ -91,9 +91,9 @@ app.get('/sensors/getLast', (req, res) => {
         assert.strictEqual(null, err)
         const db = client.db(dbName)
         const data = db.collection("sensordata")
-        var query = {}
-        data.find(query).sort('Time', -1).limit(1).toArray((function(err, result) {
-            if(err) throw err
+        var query = { MQTT_USER: req.body['MQTT_USER'] }
+        data.find(query).sort('Time', -1).limit(1).toArray((function (err, result) {
+            if (err) throw err
             res.send(result)
         }))
     })
@@ -102,4 +102,4 @@ app.get('/sensors/getLast', (req, res) => {
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
-}) 
+})
