@@ -56,6 +56,48 @@ app.get('/smartmeter/getLast', (req, res) => {
         }))
     })
 })
+//////////////////////////////////////////
+//          POWERDATA  SECTION          //
+//////////////////////////////////////////
+
+app.get('/powerdata/allData', (req, res) => {
+    client.connect(function (err) {
+        assert.strictEqual(null, err)
+        const db = client.db(dbName)
+        const data = db.collection("powerdata")
+        var query = {}
+        data.find(query).toArray((function (err, result) {
+            if (err) throw err
+            res.send(result)
+        }))
+    })
+})
+
+app.get('/powerdata/dataByTime', (req, res) => {
+    client.connect(function (err) {
+        assert.strictEqual(null, err)
+        const db = client.db(dbName)
+        const data = db.collection("powerdata")
+        var query = { Time: { $gt: req.body['Time'] } }
+        data.find(query).toArray((function (err, result) {
+            if (err) throw err
+            res.send(result)
+        }))
+    })
+})
+
+app.get('/powerdata/getLast', (req, res) => {
+    client.connect(function (err) {
+        assert.strictEqual(null, err)
+        const db = client.db(dbName)
+        const data = db.collection("powerdata")
+        var query = {}
+        data.find(query).sort('Time', -1).limit(1).toArray((function (err, result) {
+            if (err) throw err
+            res.send(result)
+        }))
+    })
+})
 
 //////////////////////////////////////////
 //          SENSORS SECTION             //
