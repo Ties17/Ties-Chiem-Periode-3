@@ -2,6 +2,7 @@ import { PercentPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ApiserviceService } from '../apiservice.service';
 import { SmartmeterData } from '../Models/SmartMeterData';
+import {interval } from 'rxjs'
 
 @Component({
   selector: 'app-home',
@@ -13,15 +14,22 @@ export class HomeComponent implements OnInit {
   pipe: any = new PercentPipe("en-US");
 
   dataSource: TempSmartmeterData[];
-  currentUsageDataSource: number;
+  smartmeterData : SmartmeterData | undefined;
+  currentUsageDataSource: number = 0;
 
   constructor(apiService: ApiserviceService) {
 
-    this.currentUsageDataSource = 1000;
+    interval(10000).subscribe(intervalValue => {
+      apiService.getLastSmartMeterRecord().subscribe(value => {
+        this.smartmeterData = (value[0]);
+        let currentUsageString : string = this.smartmeterData.Actual_electricity_power_delivered_plus;
+        currentUsageString = currentUsageString.substring(0, currentUsageString.length - 3);
 
-    apiService.getLastSmartMeterRecord().subscribe(value => {
-      console.log(value);
-    })
+        this.currentUsageDataSource = +currentUsageString;
+        this.currentUsageDataSource *= 1000;
+        console.log(this.currentUsageDataSource);
+      });
+    });
 
     this.dataSource = [
       { day: "dag 1", kwh: 1800, cost: 3 },
