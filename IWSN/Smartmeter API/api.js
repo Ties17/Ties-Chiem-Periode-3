@@ -6,7 +6,7 @@ app.use(cors())
 const port = 3000
 const MongoClient = require('mongodb').MongoClient
 const assert = require('assert')
-const url = 'mongodb://192.168.0.129:27017'
+const url = 'mongodb://localhost:27017'
 const dbName = 'smartmeter'
 const client = new MongoClient(url)
 
@@ -31,12 +31,12 @@ app.get('/smartmeter/allData', (req, res) => {
     })
 })
 
-app.get('/smartmeter/dataByTime', (req, res) => {
+app.get('/smartmeter/dataByTime/', (req, res) => {
     client.connect(function (err) {
         assert.strictEqual(null, err)
         const db = client.db(dbName)
         const data = db.collection("smartmeterdata")
-        var query = { Time: { $gt: req.body['Time'] } }
+        var query = { Time: {$gt: Number(req.query.time) } }
         data.find(query).toArray((function (err, result) {
             if (err) throw err
             res.send(result)
@@ -78,7 +78,7 @@ app.get('/powerdata/dataByTime', (req, res) => {
         assert.strictEqual(null, err)
         const db = client.db(dbName)
         const data = db.collection("powerdata")
-        var query = { Time: { $gt: req.body['Time'] } }
+        var query = { Time: {$gt: Number(req.query.time) } }
         data.find(query).toArray((function (err, result) {
             if (err) throw err
             res.send(result)

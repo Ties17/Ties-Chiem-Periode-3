@@ -1,10 +1,18 @@
 <div>
+    <div class="dx-fieldset">
+        <div class="dx-field">
+            <div class="dx-field-label">KwH</div>
+            <div class="dx-field-value">
+                <dx-number-box [value]="kwValue"></dx-number-box>
+            </div>
+        </div>
+    </div>
+
     <dx-chart id="chart"
         [dataSource]="dataSource"
-        title="Verbruik per week"
+        title="Verbruik per uur"
         palette="Harmony Light">
-        <dxi-value-axis name="kwh" position="left" [tickInterval]="300"></dxi-value-axis>
-        <dxi-value-axis name="cost" position="right" [showZero]="true" [tickInterval]="1" [valueMarginsEnabled]="false"></dxi-value-axis>
+        <dxi-value-axis name="watt" position="left" [tickInterval]="1000"></dxi-value-axis>
         <dxo-argument-axis>
             <dxo-label overlappingBehavior="stagger"></dxo-label>
         </dxo-argument-axis>
@@ -17,18 +25,11 @@
             argumentField="day">
         </dxo-common-series-settings>
         <dxi-series 
-            type="bar"
-            valueField="kwh"
-            axis="kwh"
-            name="KwH"
-            color="#fac29a">
-        </dxi-series>
-        <dxi-series 
             type="spline"
-            valueField="cost"
-            axis="cost"
-            name="Kosten"
-            color="#6b71c3">
+            valueField="watt"
+            axis="watt"
+            name="watt"
+            color="#fac29a">
         </dxi-series>
         <dxo-legend 
             verticalAlignment="top"

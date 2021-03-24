@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { ApiserviceService } from '../Api/apiservice.service';
 import { SmartmeterData } from '../Models/SmartMeterData';
 import {interval } from 'rxjs'
+import { SmartMeterDataGraph } from '../Models/SmartMeterGraphData';
+import { GraphService } from '../Graph/graph.service';
 
 @Component({
   selector: 'app-home',
@@ -13,11 +15,12 @@ export class HomeComponent implements OnInit {
 
   pipe: any = new PercentPipe("en-US");
 
-  dataSource: TempSmartmeterData[];
+  dataSource: SmartMeterDataGraph[] = [];
   smartmeterData : SmartmeterData | undefined;
   currentUsageDataSource: number = 0;
+  kwValue : number = 0;
 
-  constructor(apiService: ApiserviceService) {
+  constructor(apiService: ApiserviceService, graphService : GraphService) {
 
     interval(10000).subscribe(intervalValue => {
       apiService.getLastSmartMeterRecord().subscribe(value => {
@@ -31,15 +34,10 @@ export class HomeComponent implements OnInit {
       });
     });
 
-    this.dataSource = [
-      { day: "dag 1", kwh: 1800, cost: 3 },
-      { day: "dag 2", kwh: 2000, cost: 4 },
-      { day: "dag 3", kwh: 2100, cost: 4 },
-      { day: "dag 4", kwh: 1700, cost: 3 },
-      { day: "dag 5", kwh: 1500, cost: 2 },
-      { day: "dag 6", kwh: 1800, cost: 5 },
-      { day: "dag 7", kwh: 2100, cost: 3 }
-    ];
+    apiService.getPowerDataLastHour().subscribe(value => {
+      this.dataSource = graphService.dataToGraph(value);
+      this.kwValue = graphService.dataSourceToKWH(this.dataSource);
+    });
   }
 
   customizeTooltipGraph = (info: any) => {
@@ -48,10 +46,7 @@ export class HomeComponent implements OnInit {
             info.argumentText + "</div>" +
             "<div class='tooltip-body'><div class='series-name'>" +
             "<span class='top-series-name'>" + info.points[0].seriesName + "</span>" +": <span class='top-series-value'>" + info.points[0].valueText + "</span>" +
-            "</div><div class='series-name'>" +
-            "<span class='bottom-series-name'>" + info.points[1].seriesName + "</span>" +
-            ": €" + "<span class='bottom-series-value'>" + info.points[1].valueText + "</span>" +
-            " </div></div></div>"
+            "</div></div></div>"
     };
   }
 
@@ -64,10 +59,4 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
   }
 
-}
-
-class TempSmartmeterData {
-  day: string | undefined;
-  kwh: number | undefined;
-  cost: number | undefined;
 }
