@@ -9,7 +9,7 @@ import {repeatWhen, retry} from 'rxjs/operators';
 })
 export class ApiserviceService {
 
-  private readonly apiUrl : string = "http://localhost:3000";
+  private readonly apiUrl : string = "http://192.168.0.129:3000";
 
   constructor(private http: HttpClient) { }
 
