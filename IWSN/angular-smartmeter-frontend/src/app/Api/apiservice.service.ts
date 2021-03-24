@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { SmartmeterData } from './Models/SmartMeterData';
+import { SmartmeterData } from '../Models/SmartMeterData';
 import { HttpClient } from '@angular/common/http';
 import {repeatWhen, retry} from 'rxjs/operators';
 

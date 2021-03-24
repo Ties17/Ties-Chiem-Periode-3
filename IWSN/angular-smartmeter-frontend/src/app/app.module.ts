@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 
 import { HomeComponent } from './home/home.component';
 import { DxChartModule } from 'devextreme-angular/ui/chart';
-import { DxCircularGaugeModule, DxPieChartModule } from 'devextreme-angular';
+import { DxCheckBoxModule, DxCircularGaugeModule, DxDrawerModule, DxListModule, DxMenuModule, DxPieChartModule, DxSelectBoxModule, DxToolbarModule } from 'devextreme-angular';
 import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
@@ -20,7 +20,13 @@ import { HttpClientModule } from '@angular/common/http';
     DxChartModule,
     DxPieChartModule,
     DxCircularGaugeModule,
-    HttpClientModule
+    HttpClientModule,
+    DxSelectBoxModule,
+    DxCheckBoxModule,
+    DxToolbarModule,
+    DxDrawerModule,
+    DxMenuModule,
+    DxListModule
   ],
   providers: [],
   bootstrap: [AppComponent]

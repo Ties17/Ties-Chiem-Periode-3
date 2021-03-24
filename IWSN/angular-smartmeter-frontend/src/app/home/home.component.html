@@ -1,53 +1,57 @@
-<dx-chart id="chart"
-    [dataSource]="dataSource"
-    title="Verbruik per week"
-    palette="Harmony Light">
-    <dxi-value-axis name="kwh" position="left" [tickInterval]="300"></dxi-value-axis>
-    <dxi-value-axis name="cost" position="right" [showZero]="true" [tickInterval]="1" [valueMarginsEnabled]="false"></dxi-value-axis>
-    <dxo-argument-axis>
-        <dxo-label overlappingBehavior="stagger"></dxo-label>
-    </dxo-argument-axis>
-    <dxo-tooltip 
-        [enabled]="true"
-        [shared]="true"
-        [customizeTooltip]="customizeTooltipGraph">
-    </dxo-tooltip>
-    <dxo-common-series-settings 
-        argumentField="day">
-    </dxo-common-series-settings>
-    <dxi-series 
-        type="bar"
-        valueField="kwh"
-        axis="kwh"
-        name="KwH"
-        color="#fac29a">
-    </dxi-series>
-    <dxi-series 
-        type="spline"
-        valueField="cost"
-        axis="cost"
-        name="Kosten"
-        color="#6b71c3">
-    </dxi-series>
-    <dxo-legend 
-        verticalAlignment="top"
-        horizontalAlignment="center">
-    </dxo-legend>
-</dx-chart>
+<div>
+    <dx-chart id="chart"
+        [dataSource]="dataSource"
+        title="Verbruik per week"
+        palette="Harmony Light">
+        <dxi-value-axis name="kwh" position="left" [tickInterval]="300"></dxi-value-axis>
+        <dxi-value-axis name="cost" position="right" [showZero]="true" [tickInterval]="1" [valueMarginsEnabled]="false"></dxi-value-axis>
+        <dxo-argument-axis>
+            <dxo-label overlappingBehavior="stagger"></dxo-label>
+        </dxo-argument-axis>
+        <dxo-tooltip 
+            [enabled]="true"
+            [shared]="true"
+            [customizeTooltip]="customizeTooltipGraph">
+        </dxo-tooltip>
+        <dxo-common-series-settings 
+            argumentField="day">
+        </dxo-common-series-settings>
+        <dxi-series 
+            type="bar"
+            valueField="kwh"
+            axis="kwh"
+            name="KwH"
+            color="#fac29a">
+        </dxi-series>
+        <dxi-series 
+            type="spline"
+            valueField="cost"
+            axis="cost"
+            name="Kosten"
+            color="#6b71c3">
+        </dxi-series>
+        <dxo-legend 
+            verticalAlignment="top"
+            horizontalAlignment="center">
+        </dxo-legend>
+    </dx-chart>
+</div>
 
-<dx-circular-gauge id="gauge" [value]="currentUsageDataSource">
-    <dxo-scale
-        [startValue]="0"
-        [endValue]="2000"
-        [tickInterval]="10">
-        <dxo-label [useRangeColors]="true"></dxo-label>
-    </dxo-scale>
-    <dxo-range-container palette="pastel">
-        <dxi-range [startValue]="0" [endValue]="300"></dxi-range>
-        <dxi-range [startValue]="300" [endValue]="800"></dxi-range>
-        <dxi-range [startValue]="800" [endValue]="2000"></dxi-range>
-    </dxo-range-container>
-    <dxo-title text="Current energy use">
-        <dxo-font [size]="28"></dxo-font>
-    </dxo-title>
-</dx-circular-gauge>
+<div>
+    <dx-circular-gauge id="gauge" [value]="currentUsageDataSource">
+        <dxo-scale
+            [startValue]="0"
+            [endValue]="2000"
+            [tickInterval]="50">
+            <dxo-label [useRangeColors]="true"></dxo-label>
+        </dxo-scale>
+        <dxo-range-container palette="pastel">
+            <dxi-range [startValue]="0" [endValue]="300"></dxi-range>
+            <dxi-range [startValue]="300" [endValue]="800"></dxi-range>
+            <dxi-range [startValue]="800" [endValue]="2000"></dxi-range>
+        </dxo-range-container>
+        <dxo-title text="Current energy use">
+            <dxo-font [size]="28"></dxo-font>
+        </dxo-title>
+    </dx-circular-gauge>
+</div>
