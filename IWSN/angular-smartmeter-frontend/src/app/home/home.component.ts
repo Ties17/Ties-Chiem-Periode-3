@@ -1,6 +1,6 @@
 import { PercentPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ApiserviceService } from '../apiservice.service';
+import { ApiserviceService } from '../Api/apiservice.service';
 import { SmartmeterData } from '../Models/SmartMeterData';
 import {interval } from 'rxjs'
 

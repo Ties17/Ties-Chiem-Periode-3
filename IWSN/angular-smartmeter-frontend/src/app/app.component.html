@@ -1,6 +1,27 @@
-<div>
-  <app-home></app-home>
-</div>
+<div class="fullscreen">
+  <dx-toolbar
+    width="4000"
+    [items]="toolbarContent">
+  </dx-toolbar>
 
+  <dx-drawer 
+    [openedStateMode]="'overlap'"
+    position="left"
+    revealMode="slide"
+    template="template"
+    [(opened)]="isDrawerOpen"
+    height="100%"
+    [closeOnOutsideClick]="true">
+    <div *dxTemplate="let data of 'template'" style="width: 200px">
+        <dx-list class="panel-list dx-theme-accent-as-background-color"
+            [dataSource]="navigation"
+            [hoverStateEnabled]="false"
+            [activeStateEnabled]="false"
+            [focusStateEnabled]="false">
+        </dx-list>
+    </div>
+    <app-home></app-home>
+  </dx-drawer>
+</div>
 
 <router-outlet></router-outlet>
