@@ -38,13 +38,21 @@
     </dx-chart>
 </div>
 
-<dx-circular-gauge id="gauge" [value]="currentUsageDataSource">
+<dx-circular-gauge id="gauge" [(value)]="currentUsageDataSource">
     <dxo-scale
         [startValue]="0"
         [endValue]="5000"
-        [tickInterval]="10">
+        [tickInterval]="50">
         <dxo-label [useRangeColors]="true"></dxo-label>
     </dxo-scale>
+    <dxo-tooltip
+        [enabled]="true"
+        [customizeTooltip]="customizeTooltipGauge">
+        <dxo-font
+            color="#483D8B"
+            [size]="40">
+        </dxo-font>
+    </dxo-tooltip>
     <dxo-range-container palette="pastel">
         <dxi-range [startValue]="0" [endValue]="300"></dxi-range>
         <dxi-range [startValue]="300" [endValue]="800"></dxi-range>

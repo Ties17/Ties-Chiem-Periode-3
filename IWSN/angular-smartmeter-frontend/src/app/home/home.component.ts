@@ -1,10 +1,11 @@
 import { PercentPipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { ApiserviceService } from '../Api/apiservice.service';
 import { SmartmeterData } from '../Models/SmartMeterData';
 import {interval } from 'rxjs'
 import { SmartMeterDataGraph } from '../Models/SmartMeterGraphData';
 import { GraphService } from '../Graph/graph.service';
+import { DxCircularGaugeComponent, DxDataGridComponent } from 'devextreme-angular';
 
 @Component({
   selector: 'app-home',
@@ -21,7 +22,6 @@ export class HomeComponent implements OnInit {
   kwValue : number = 0;
 
   constructor(apiService: ApiserviceService, graphService : GraphService) {
-
     interval(10000).subscribe(intervalValue => {
       apiService.getLastSmartMeterRecord().subscribe(value => {
         this.smartmeterData = (value[0]);
@@ -31,11 +31,12 @@ export class HomeComponent implements OnInit {
         this.currentUsageDataSource = +currentUsageString;
         this.currentUsageDataSource *= 1000;
         console.log(this.currentUsageDataSource);
+        
       });
     });
 
     apiService.getPowerDataLastHour().subscribe(value => {
-      this.dataSource = graphService.dataToGraph(value);
+      this.dataSource = graphService.dataToGraph(value, 1);
       this.kwValue = graphService.dataSourceToKWH(this.dataSource);
     });
   }
@@ -48,15 +49,15 @@ export class HomeComponent implements OnInit {
             "<span class='top-series-name'>" + info.points[0].seriesName + "</span>" +": <span class='top-series-value'>" + info.points[0].valueText + "</span>" +
             "</div></div></div>"
     };
+
   }
 
-  customizeTooltipDonut = (arg: any) => {
+  customizeTooltipGauge(arg: any) {
     return {
-        text: arg.valueText + " - " + this.pipe.transform(arg.percent, "1.2-2")
+        text: arg.value + " watt"
     };
   }
 
   ngOnInit(): void {
   }
-
 }

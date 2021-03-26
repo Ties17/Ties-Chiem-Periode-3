@@ -11,7 +11,7 @@ export class GraphService {
 
   constructor() { }
 
-  dataToGraph(smartmeterData : SmartMeterPowerData[]) : SmartMeterDataGraph[]  {
+  dataToGraph(smartmeterData : SmartMeterPowerData[], periodInMinuts : number) : SmartMeterDataGraph[]  {
     let graphData : SmartMeterDataGraph[] = [];
 
     let timeGrouping : Date | undefined;
@@ -24,19 +24,24 @@ export class GraphService {
       originalTime.setTime(data.Time * 1000); 
 
       if(timeGrouping == null) {
-        timeGrouping = originalTime;
+        timeGrouping = new Date();
+        timeGrouping.setTime((data.Time * 1000) + (periodInMinuts * 60 * 1000))
       }
 
       //check if the time from current iteration is same as the one from pervious iteration
       let sameTime : boolean = true;
-      if(originalTime.getHours() == timeGrouping.getHours()) {
-        if(originalTime.getMinutes() != timeGrouping.getMinutes()) {
-          sameTime = false;
-        }
-      }
-      else {
+      if(originalTime.getTime() >= timeGrouping.getTime()) {
         sameTime = false;
       }
+
+      // if(originalTime.getHours() == timeGrouping.getHours()) {
+      //   if(originalTime.getMinutes() != timeGrouping.getMinutes()) {
+      //     sameTime = false;
+      //   }
+      // }
+      // else {
+      //   sameTime = false;
+      // }
 
       if(sameTime) {
         dataGroup.push(data);
