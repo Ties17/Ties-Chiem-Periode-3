@@ -79,7 +79,8 @@ app.get('/powerdata/dataByTime', (req, res) => {
         const db = client.db(dbName)
         const data = db.collection("powerdata")
         var query = { Time: {$gt: Number(req.query.time) } }
-        data.find(query).toArray((function (err, result) {
+        var sort = { Time: 1}
+        data.find(query).sort(sort).toArray((function (err, result) {
             if (err) throw err
             res.send(result)
         }))
