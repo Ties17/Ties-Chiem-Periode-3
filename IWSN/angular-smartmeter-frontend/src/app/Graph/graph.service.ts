@@ -1,87 +1,101 @@
 import { Injectable } from '@angular/core';
 import { SmartMeterPowerData } from '../Models/SmartMeterPowerData';
 import {SmartMeterDataGraph} from '../Models/SmartMeterGraphData'
-import { timestamp } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GraphService {
 
+  monthNames : string[] = ["Januari", "Februari", "Maart", "April", "Mei", "Juni",
+  "Juli", "Augustus", "September", "Oktober", "November", "December"
+  ];
 
   constructor() { }
 
-  dataToGraph(smartmeterData : SmartMeterPowerData[], periodInMinuts : number) : SmartMeterDataGraph[]  {
-    let graphData : SmartMeterDataGraph[] = [];
+  dataToGraph(smartmeterData : SmartMeterPowerData[], dates : Date[], keyType : string) : SmartMeterDataGraph[]  {
 
-    let timeGrouping : Date | undefined;
+    let graphData : SmartMeterDataGraph[] = [];
     let dataGroup : SmartMeterPowerData[] = [];
-    //Loop through all data from last hour.
+    let currentDate : number = 0;
+
+    //Loop through all data.
     smartmeterData.forEach(data => {
 
-      //check time, same date - hour - minute goes together in small array
-      let originalTime : Date = new Date();
-      originalTime.setTime(data.Time * 1000); 
+      let dataFragmentTime = new Date();
+      dataFragmentTime.setTime(data.Time * 1000);
+      dataFragmentTime.setHours(dataFragmentTime.getHours() - 1); //match with system time
 
-      if(timeGrouping == null) {
-        timeGrouping = new Date();
-        timeGrouping.setTime((data.Time * 1000) + (periodInMinuts * 60 * 1000))
+      if(dates[currentDate] == null) {//return if there are no dates left
+        return;
       }
 
-      //check if the time from current iteration is same as the one from pervious iteration
-      let sameTime : boolean = true;
-      if(originalTime.getTime() >= timeGrouping.getTime()) {
-        sameTime = false;
-      }
+      if(dataFragmentTime.getTime() > dates[currentDate].getTime()) {
 
-      // if(originalTime.getHours() == timeGrouping.getHours()) {
-      //   if(originalTime.getMinutes() != timeGrouping.getMinutes()) {
-      //     sameTime = false;
-      //   }
-      // }
-      // else {
-      //   sameTime = false;
-      // }
-
-      if(sameTime) {
-        dataGroup.push(data);
-      }
-      else {
-        let totalPowerDeliverd : number = 0;
-
-        dataGroup.forEach(minuteData => {
-          if(minuteData.Actual_electricity_power_delivered_plus != null) {
-            let powerDeliverd = this.powerDeliveredToNumber(minuteData.Actual_electricity_power_delivered_plus);
-            powerDeliverd *= 1000; //convert to watt;
-      
-            totalPowerDeliverd += powerDeliverd;
-          }
-        });
-
-        let originalTime : Date = new Date();
-        originalTime.setTime(dataGroup[0].Time * 1000); 
-        originalTime.setHours(originalTime.getHours() - 1); //adjust to timezone;
-        let hours = originalTime.getHours().toString();
-        if (originalTime.getHours() < 10) {
-            hours = '0' + hours;
-        }
-        let minutes = originalTime.getMinutes().toString();
-        if (originalTime.getMinutes() < 10) {
-          minutes = '0' + minutes;
-        }
-  
+        let key : string = this.generateGraphKey(dates, currentDate, keyType);
+        let watt : number = this.generateWatt(dataGroup);
+        
         let graphDataSingle : SmartMeterDataGraph = new SmartMeterDataGraph();
-        graphDataSingle.day = hours + ":" + minutes;
-        graphDataSingle.watt = totalPowerDeliverd / dataGroup.length;
+        graphDataSingle.day = key;
+        graphDataSingle.watt = watt;
         
         graphData.push(graphDataSingle);
-
         dataGroup = [];
-        timeGrouping = undefined;
+        currentDate++;
+      }
+      else {
+        dataGroup.push(data);
       }
     });
 
     return graphData;
+  }
+
+  generateWatt(dataGroup: SmartMeterPowerData[]): number {
+    
+    let kwh : number = 0;
+    let totalkWh : number = 0;
+    let hoursInDataGroup : number = 0;
+    let startHourDate : Date = new Date();
+    let firstElement : SmartMeterPowerData | undefined;
+
+    for(let i = 0; i < dataGroup.length; i++) {
+      if(dataGroup[i] != null) {
+        firstElement = dataGroup[i];
+        break;
+      }
+    }
+
+    if(firstElement != null) {
+      startHourDate.setTime(firstElement.Time * 1000);
+      startHourDate.setHours(startHourDate.getHours() + 1);
+      startHourDate.setMinutes(startHourDate.getMinutes() + 1);
+    }
+
+    dataGroup.forEach(value => {
+      if(value.Actual_electricity_power_delivered_plus != null)
+      {
+        if((value.Time * 1000) >= (startHourDate.getTime())) {
+
+          totalkWh += kwh;
+          hoursInDataGroup++;
+
+          startHourDate.setTime(value.Time * 1000);
+          startHourDate.setHours(startHourDate.getHours() + 1);
+
+          kwh = 0;
+        }
+
+        let powerDeliverd = this.powerDeliveredToNumber(value.Actual_electricity_power_delivered_plus);
+        kwh += (powerDeliverd * 1000); //to watt
+      }
+    });
+
+    if(totalkWh <= 0) {
+      return kwh / dataGroup.length;
+    }
+
+    return (totalkWh / (dataGroup.length / hoursInDataGroup));
   }
 
   dataSourceToKWH(dataSource: SmartMeterDataGraph[]): number {
@@ -101,4 +115,71 @@ export class GraphService {
     let powerDeliverd : number = +powerDeleiverdAsString;
     return powerDeliverd;
   }
+
+  getDatesForHourGraph(interval : number, amountOfHours : number): Date[] {
+    let dates : Date[] = [];
+    let date : Date = new Date();
+    date.setHours(date.getHours() - amountOfHours);
+    date.setMinutes((date.getMinutes() - (date.getMinutes() % interval)) + interval);
+    date.setSeconds(0);
+
+    let iterationTime = (amountOfHours * 60) / interval
+    for(let i = 0; i < iterationTime; i++) {
+      let dateToPush = new Date()
+      dateToPush.setTime(date.getTime());
+      dateToPush.setMinutes(date.getMinutes() + (interval * i));
+      dates.push(dateToPush);
+    }
+  
+    return dates;
+  }
+
+  getDatesForDaysGraph(interval : number, amountOfDays : number) : Date[] {
+    
+    let dates : Date[] = [];
+    let date : Date = new Date();
+    date.setDate(date.getDate()  - 1);
+
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
+
+    for(let i = 0; i < amountOfDays; i++) {
+      let dateToPush = new Date();
+      dateToPush.setTime(date.getTime());
+      dateToPush.setDate(date.getDate() - i + interval);
+      dates.push(dateToPush);
+    }
+
+    return dates.reverse();
+  }
+
+  generateGraphKey(dates: Date[], currentDate: number, keyType : string): string {
+
+    if(keyType == "days") { //keys become days
+      let dayNumber = dates[currentDate].getDate().toString();
+      if (dates[currentDate].getDate() < 10) {
+        dayNumber = '0' + dayNumber;
+      }
+
+      let monthNumber = dates[currentDate].getMonth();
+      return dayNumber + "-" + this.monthNames[monthNumber];
+    }
+    else { //keys become hours
+      let hours = dates[currentDate].getHours().toString();
+      if (dates[currentDate].getHours() < 10) {
+        hours = '0' + hours;
+      }
+      let minutes = dates[currentDate].getMinutes().toString();
+      if (dates[currentDate].getMinutes() < 10) {
+        minutes = '0' + minutes;
+      }
+
+      return hours + ":" + minutes;
+    }
+  }
 }
+ 
+
+
+

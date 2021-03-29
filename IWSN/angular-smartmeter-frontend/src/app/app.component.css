@@ -1,8 +1,35 @@
-.fullscreen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    overflow: auto;
+html, body {
+    margin: 0px;
+    height: 100%;
+}
+
+.full-height {
+    height: 100vh;
+}
+
+.dx-toolbar {
+    background-color: rgba(191, 191, 191, .15);
+    padding: 5px 10px;
+}
+
+.dx-button {
+    background-color: rgba(191, 191, 191, -0.15);
+    border: none;
+}
+
+.drawer-width {
+    width: 200px !important; 
+}
+
+::ng-deep .panel-list .dx-list-item {
+    color: #fff;
+    border-top: 1px solid rgba(221, 221, 221, .2);
+}
+
+::ng-deep .panel-list .dx-list-item .dx-icon {
+    color: #fff !important;
+}
+
+#content {
+    height: 100vh;
 }

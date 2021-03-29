@@ -26,10 +26,31 @@ export class ApiserviceService {
 
   getPowerDataLastHour(): Observable<SmartMeterPowerData[]> {
     let dateNow : Date = new Date();
-
-    console.log(dateNow.getTime() / 1000);
     const epochNow = Math.floor((dateNow.getTime() / 1000));
-    console.log(dateNow);
+
+    return this.http.get<SmartMeterPowerData[]>(this.apiUrl + "/powerdata/dataByTime/?time=" + epochNow);
+  }
+
+  getPowerDataDay() : Observable<SmartMeterPowerData[]> {
+    let dateNow : Date = new Date();
+    dateNow.setDate(dateNow.getDate() - 1);
+    const epochNow = Math.floor((dateNow.getTime() / 1000));
+
+    return this.http.get<SmartMeterPowerData[]>(this.apiUrl + "/powerdata/dataByTime/?time=" + epochNow);
+  }
+
+  getPowerDataWeek() : Observable<SmartMeterPowerData[]> {
+    let dateNow : Date = new Date();
+    dateNow.setDate(dateNow.getDate() - 7);
+    const epochNow = Math.floor((dateNow.getTime() / 1000));
+
+    return this.http.get<SmartMeterPowerData[]>(this.apiUrl + "/powerdata/dataByTime/?time=" + epochNow);
+  }
+
+  getPowerDataMonth() : Observable<SmartMeterPowerData[]> {
+    let dateNow : Date = new Date();
+    dateNow.setMonth(dateNow.getMonth() - 1);
+    const epochNow = Math.floor((dateNow.getTime() / 1000));
 
     return this.http.get<SmartMeterPowerData[]>(this.apiUrl + "/powerdata/dataByTime/?time=" + epochNow);
   }

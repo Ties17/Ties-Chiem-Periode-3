@@ -1,4 +1,4 @@
-<div class="fullscreen">
+<div>
   <dx-toolbar
     [items]="toolbarContent">
   </dx-toolbar>
@@ -9,17 +9,20 @@
     revealMode="slide"
     template="template"
     [(opened)]="isDrawerOpen"
-    height="100%"
-    [closeOnOutsideClick]="true">
-    <div *dxTemplate="let data of 'template'" style="width: 200px">
+    [closeOnOutsideClick]="true"
+    class="full-height">
+    <div class="drawer-width" *dxTemplate="let data of 'template'">
         <dx-list class="panel-list dx-theme-accent-as-background-color"
             [dataSource]="navigation"
             [hoverStateEnabled]="false"
             [activeStateEnabled]="false"
-            [focusStateEnabled]="false">
+            [focusStateEnabled]="false"
+            (onItemClick)="itemClick($event)">
         </dx-list>
     </div>
-    <app-home></app-home>
+    <div #content>
+        <app-home></app-home>
+    </div>
   </dx-drawer>
 </div>
 
