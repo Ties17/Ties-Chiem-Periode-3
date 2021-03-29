@@ -4,13 +4,14 @@ import { SmartmeterData } from '../Models/SmartMeterData';
 import { HttpClient } from '@angular/common/http';
 import {repeatWhen, retry} from 'rxjs/operators';
 import { SmartMeterPowerData } from '../Models/SmartMeterPowerData';
+import { SensorData } from '../Models/SensorData';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiserviceService {
 
-  private readonly apiUrl : string = "http://localhost:3000";
+  private readonly apiUrl : string = "http://192.168.0.129:3000";
 
   constructor(private http: HttpClient) { }
 
@@ -36,5 +37,12 @@ export class ApiserviceService {
 
   getLastSmartMeterRecord(): Observable<SmartmeterData[]> {
     return this.http.get<SmartmeterData[]>(this.apiUrl + "/smartmeter/getLast");
+  }
+
+  getLastSensorReadingChiem(): Observable<SensorData[]> {
+    return this.http.get<SensorData[]>(this.apiUrl + "/sensors/getLast/?MQTT_USER=SENSORDATA-CHIEM");
+  }
+  getLastSensorReadingTies(): Observable<SensorData[]> {
+    return this.http.get<SensorData[]>(this.apiUrl + "/sensors/getLast/?MQTT_USER=SENSORDATA-TIES");
   }
 }
