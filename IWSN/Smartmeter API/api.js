@@ -36,8 +36,9 @@ app.get('/smartmeter/dataByTime/', (req, res) => {
         assert.strictEqual(null, err)
         const db = client.db(dbName)
         const data = db.collection("smartmeterdata")
-        var query = { Time: {$gt: Number(req.query.time) } }
-        data.find(query).toArray((function (err, result) {
+        var query = { Time: { $gt: Number(req.query.time) } }
+        var sort = { Time: 1 }
+        data.find(query).sort(sort).toArray((function (err, result) {
             if (err) throw err
             res.send(result)
         }))
@@ -78,8 +79,8 @@ app.get('/powerdata/dataByTime', (req, res) => {
         assert.strictEqual(null, err)
         const db = client.db(dbName)
         const data = db.collection("powerdata")
-        var query = { Time: {$gt: Number(req.query.time) } }
-        var sort = { Time: 1}
+        var query = { Time: { $gt: Number(req.query.time) } }
+        var sort = { Time: 1 }
         data.find(query).sort(sort).toArray((function (err, result) {
             if (err) throw err
             res.send(result)
@@ -122,8 +123,9 @@ app.get('/sensors/dataByTime', (req, res) => {
         assert.strictEqual(null, err)
         const db = client.db(dbName)
         const data = db.collection("sensordata")
-        var query = { Time: { $gt: req.body['Time'] } }
-        data.find(query).toArray((function (err, result) {
+        var query = { Time: { $gt: Number(req.query.time) } }
+        var sort = { Time: 1 }
+        data.find(query).sort(sort).toArray((function (err, result) {
             if (err) throw err
             res.send(result)
         }))
