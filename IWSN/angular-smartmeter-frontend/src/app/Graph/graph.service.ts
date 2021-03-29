@@ -18,6 +18,7 @@ export class GraphService {
     let graphData : SmartMeterDataGraph[] = [];
     let dataGroup : SmartMeterPowerData[] = [];
     let currentDate : number = 0;
+    const energyCost : number = 0.22;
 
     //Loop through all data.
     smartmeterData.forEach(data => {
@@ -37,7 +38,13 @@ export class GraphService {
         
         let graphDataSingle : SmartMeterDataGraph = new SmartMeterDataGraph();
         graphDataSingle.day = key;
-        graphDataSingle.watt = watt;
+        graphDataSingle.watt = +watt.toFixed(0);
+
+        if(keyType == "days") { //wh to kwh
+          graphDataSingle.watt = +(graphDataSingle.watt / 1000).toFixed(1);
+          graphDataSingle.cost = +(graphDataSingle.watt * energyCost).toFixed(2);
+          console.log(graphDataSingle.cost);
+        }
         
         graphData.push(graphDataSingle);
         dataGroup = [];

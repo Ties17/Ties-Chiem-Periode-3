@@ -1,32 +1,28 @@
-<div>
-    <div class="dx-fieldset">
-        <div class="dx-field">
-            <div class="dx-field-label">KwH</div>
-            <div class="dx-field-value">
-                <dx-number-box [value]="kwValue"></dx-number-box>
-            </div>
-        </div>
-    </div>
-
-    <dx-chart id="chart" [dataSource]="dataSource" title="Verbruik per uur" palette="Harmony Light">
-        <dxi-value-axis name="watt" position="left" [tickInterval]="1000"></dxi-value-axis>
+<div class="chart">
+    <dx-chart id="chart" [dataSource]="dataSource" title="Verbruik" palette="Harmony Light">
+        <dxi-value-axis name="watt" position="left" [tickInterval]="tickInterval"></dxi-value-axis>
+        <dxi-value-axis name="cost" position="right" [tickInterval]="5"></dxi-value-axis>
         <dxo-argument-axis>
             <dxo-label overlappingBehavior="stagger"></dxo-label>
         </dxo-argument-axis>
         <dxo-tooltip [enabled]="true" [shared]="true" [customizeTooltip]="customizeTooltipGraph">
         </dxo-tooltip>
-        <dxo-common-series-settings argumentField="day">
-        </dxo-common-series-settings>
-
+        <dxo-common-series-settings argumentField="day"></dxo-common-series-settings>
         <dxi-series 
             type="bar"
             valueField="watt"
             axis="watt"
-            name="watt"
+            [name]="valueFieldSeries"
             color="#fac29a">
         </dxi-series>
-        <dxo-legend verticalAlignment="top" horizontalAlignment="center">
-        </dxo-legend>
+        <dxi-series 
+            type="spline"
+            valueField="cost"
+            axis="cost"
+            name="kosten"
+            color="#1DC6A0">
+        </dxi-series>
+        <dxo-legend verticalAlignment="top" horizontalAlignment="center"></dxo-legend>
     </dx-chart>
 </div>
 

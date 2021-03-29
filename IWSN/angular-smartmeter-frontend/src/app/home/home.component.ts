@@ -5,7 +5,6 @@ import { SmartmeterData } from '../Models/SmartMeterData';
 import {interval, Observable, Subject } from 'rxjs'
 import { SmartMeterDataGraph } from '../Models/SmartMeterGraphData';
 import { GraphService } from '../Graph/graph.service';
-import { DxCircularGaugeComponent, DxDataGridComponent } from 'devextreme-angular';
 import { GraphType } from '../Enums/graphTypes'
 
 @Component({
@@ -19,7 +18,8 @@ export class HomeComponent implements OnInit {
   smartmeterData : SmartmeterData | undefined;
   currentUsageDataSource: number = 0;
   kwValue : number = 0;
-
+  valueFieldSeries : string = "watt";
+  tickInterval : number = 0;
 
   Users = ["Ties", "Chiem"]
   selectedUser!: String;
@@ -50,7 +50,6 @@ export class HomeComponent implements OnInit {
     });
   }
 
-
   ngOnInit(): void {}
 
   requestSensorData(): void {
@@ -78,13 +77,27 @@ export class HomeComponent implements OnInit {
   }
 
   customizeTooltipGraph = (info: any) => {
-    return {
+
+    if(info.points[1] != null) { //kosten
+      return {
         html: "<div><div class='tooltip-header'>" +
-            info.argumentText + "</div>" +
-            "<div class='tooltip-body'><div class='series-name'>" +
-            "<span class='top-series-name'>" + info.points[0].seriesName + "</span>" +": <span class='top-series-value'>" + info.points[0].valueText + "</span>" +
-            "</div></div></div>"
-    };
+              info.argumentText + "</div>" +
+              "<div class='tooltip-body'><div class='series-name'>" +
+              "<span class='top-series-name'>" + info.points[0].seriesName + ": " + info.points[0].valueText  + "</span>" +
+              "</div><div class='series-name'>" +
+              "<span class='bottom-series-name'>" + info.points[1].seriesName + ": €" + info.points[1].valueText + "</span>" +
+              "</div></div></div>"
+      };
+    }
+    else {
+      return {
+        html: "<div><div class='tooltip-header'>" +
+              info.argumentText + "</div>" +
+              "<div class='tooltip-body'><div class='series-name'>" +
+              "<span class='top-series-name'>" + info.points[0].seriesName + ": " + info.points[0].valueText  + "</span>" +
+              "</div></div></div>"
+      };
+    }
   }
 
   customizeTooltipGauge(arg: any) {
@@ -102,6 +115,8 @@ export class HomeComponent implements OnInit {
           this.dataSource = this.graphService.dataToGraph(value, this.graphService.getDatesForHourGraph(5, 1), "hours");
           this.kwValue = this.graphService.dataSourceToKWH(this.dataSource);
         });
+        this.valueFieldSeries = "watt";
+        this.tickInterval = 1000;
 
         break;
       case GraphType.Day:
@@ -110,6 +125,8 @@ export class HomeComponent implements OnInit {
           this.dataSource = this.graphService.dataToGraph(value, this.graphService.getDatesForHourGraph(60, 24), "hours");
           this.kwValue = this.graphService.dataSourceToKWH(this.dataSource);
         });
+        this.valueFieldSeries = "watt";
+        this.tickInterval = 1000;
 
         break;
       case GraphType.Week:
@@ -118,6 +135,8 @@ export class HomeComponent implements OnInit {
           this.dataSource = this.graphService.dataToGraph(value, this.graphService.getDatesForDaysGraph(1, 7), "days");
           this.kwValue = this.graphService.dataSourceToKWH(this.dataSource);
         });
+        this.valueFieldSeries = "KwH";
+        this.tickInterval = 5;
 
         break;
       case GraphType.Month:
@@ -126,6 +145,8 @@ export class HomeComponent implements OnInit {
           this.dataSource = this.graphService.dataToGraph(value, this.graphService.getDatesForDaysGraph(1, 30), "days");
           this.kwValue = this.graphService.dataSourceToKWH(this.dataSource);
         });
+        this.valueFieldSeries = "KwH";
+        this.tickInterval = 5;
 
         break;
     }
