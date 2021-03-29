@@ -138,7 +138,7 @@ app.get('/sensors/getLast', (req, res) => {
         assert.strictEqual(null, err)
         const db = client.db(dbName)
         const data = db.collection("sensordata")
-        var query = { MQTT_USER: req.body['MQTT_USER'] }
+        var query = { MQTT_USER: req.query.MQTT_USER }
         data.find(query).sort('Time', -1).limit(1).toArray((function (err, result) {
             if (err) throw err
             res.send(result)
