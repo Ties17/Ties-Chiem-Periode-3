@@ -64,6 +64,6 @@ export class ApiserviceService {
     return this.http.get<SensorData[]>(this.apiUrl + "/sensors/getLast/?MQTT_USER=SENSORDATA-CHIEM");
   }
   getLastSensorReadingTies(): Observable<SensorData[]> {
-    return this.http.get<SensorData[]>(this.apiUrl + "/sensors/getLast/?MQTT_USER=SENSORDATA-TIES");
+    return this.http.get<SensorData[]>(this.apiUrl + "/sensors/getLast/?MQTT_USER=SENSORDATA-Ties");
   }
 }
