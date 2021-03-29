@@ -8,22 +8,16 @@
         </div>
     </div>
 
-    <dx-chart id="chart"
-        [dataSource]="dataSource"
-        title="Verbruik per uur"
-        palette="Harmony Light">
+    <dx-chart id="chart" [dataSource]="dataSource" title="Verbruik per uur" palette="Harmony Light">
         <dxi-value-axis name="watt" position="left" [tickInterval]="1000"></dxi-value-axis>
         <dxo-argument-axis>
             <dxo-label overlappingBehavior="stagger"></dxo-label>
         </dxo-argument-axis>
-        <dxo-tooltip 
-            [enabled]="true"
-            [shared]="true"
-            [customizeTooltip]="customizeTooltipGraph">
+        <dxo-tooltip [enabled]="true" [shared]="true" [customizeTooltip]="customizeTooltipGraph">
         </dxo-tooltip>
-        <dxo-common-series-settings 
-            argumentField="day">
+        <dxo-common-series-settings argumentField="day">
         </dxo-common-series-settings>
+
         <dxi-series 
             type="bar"
             valueField="watt"
@@ -31,34 +25,81 @@
             name="watt"
             color="#fac29a">
         </dxi-series>
-        <dxo-legend 
-            verticalAlignment="top"
-            horizontalAlignment="center">
+        <dxo-legend verticalAlignment="top" horizontalAlignment="center">
         </dxo-legend>
     </dx-chart>
 </div>
 
-<dx-circular-gauge id="gauge" [(value)]="currentUsageDataSource">
-    <dxo-scale
-        [startValue]="0"
-        [endValue]="5000"
-        [tickInterval]="50">
-        <dxo-label [useRangeColors]="true"></dxo-label>
-    </dxo-scale>
-    <dxo-tooltip
-        [enabled]="true"
-        [customizeTooltip]="customizeTooltipGauge">
-        <dxo-font
-            color="#483D8B"
-            [size]="40">
-        </dxo-font>
-    </dxo-tooltip>
-    <dxo-range-container palette="pastel">
-        <dxi-range [startValue]="0" [endValue]="300"></dxi-range>
-        <dxi-range [startValue]="300" [endValue]="800"></dxi-range>
-        <dxi-range [startValue]="800" [endValue]="5000"></dxi-range>
-    </dxo-range-container>
-    <dxo-title text="Current energy use">
-        <dxo-font [size]="28"></dxo-font>
-    </dxo-title>
-</dx-circular-gauge>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3">
+            <dx-circular-gauge id="gaugeWatt" class="gauge-watt" [(value)]="currentUsageDataSource">
+                <dxo-scale [startValue]="0" [endValue]="5000" [tickInterval]="50">
+                    <dxo-label [useRangeColors]="true"></dxo-label>
+                </dxo-scale>
+                <dxo-tooltip [enabled]="true" [customizeTooltip]="customizeTooltipGauge">
+                    <dxo-font color="#483D8B" [size]="40">
+                    </dxo-font>
+                </dxo-tooltip>
+                <dxo-range-container palette="pastel">
+                    <dxi-range [startValue]="0" [endValue]="300"></dxi-range>
+                    <dxi-range [startValue]="300" [endValue]="800"></dxi-range>
+                    <dxi-range [startValue]="800" [endValue]="5000"></dxi-range>
+                </dxo-range-container>
+                <dxo-title text="Current energy use">
+                    <dxo-font [size]="28"></dxo-font>
+                </dxo-title>
+            </dx-circular-gauge>
+        </div>
+        <div class="col-sm-3">
+            <dx-select-box class="select" [items]="Users" placeholder="Select user"
+                (onValueChanged)=userSelected($event)>
+            </dx-select-box>
+        </div>
+        <div class="col-sm-6">
+            <div class="row" *ngIf="selectedUser">
+                Tijd van reading: {{observableTime | async}}
+            </div>
+            <div class="row" *ngIf="selectedUser">
+                <div class="col">
+                    <dx-circular-gauge id="gaugeTemp" [(value)]="currentTemp">
+                        <dxo-scale [startValue]="-5" [endValue]="40" [tickInterval]="0">
+                            <dxo-label [useRangeColors]="true"></dxo-label>
+                        </dxo-scale>
+                        <dxo-tooltip [enabled]="true" [customizeTooltip]="customizeTooltipTemp">
+                            <dxo-font color="#483D8B" [size]="40">
+                            </dxo-font>
+                        </dxo-tooltip>
+                        <dxo-range-container palette="pastel">
+                            <dxi-range [startValue]="-5" [endValue]="0"></dxi-range>
+                            <dxi-range [startValue]="0" [endValue]="20"></dxi-range>
+                            <dxi-range [startValue]="20" [endValue]="40"></dxi-range>
+                        </dxo-range-container>
+                        <dxo-title text="Current Temperaure">
+                            <dxo-font [size]="28"></dxo-font>
+                        </dxo-title>
+                    </dx-circular-gauge>
+                </div>
+                <div class="col">
+                    <dx-circular-gauge id="gaugeHum" [(value)]="currentHum">
+                        <dxo-scale [startValue]="0" [endValue]="100" [tickInterval]="0">
+                            <dxo-label [useRangeColors]="true"></dxo-label>
+                        </dxo-scale>
+                        <dxo-tooltip [enabled]="true" [customizeTooltip]="customizeTooltipHum">
+                            <dxo-font color="#483D8B" [size]="40">
+                            </dxo-font>
+                        </dxo-tooltip>
+                        <dxo-range-container palette="pastel">
+                            <dxi-range [startValue]="0" [endValue]="20"></dxi-range>
+                            <dxi-range [startValue]="20" [endValue]="60"></dxi-range>
+                            <dxi-range [startValue]="60" [endValue]="100"></dxi-range>
+                        </dxo-range-container>
+                        <dxo-title text="Current Humidity">
+                            <dxo-font [size]="28"></dxo-font>
+                        </dxo-title>
+                    </dx-circular-gauge>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
