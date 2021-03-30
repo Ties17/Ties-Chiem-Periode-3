@@ -18,10 +18,11 @@ export class AppComponent {
 
   constructor() {
     this.navigation = [
-      { id: 1, text: "Verbruik per uur" },
-      { id: 2, text: "Verbruik per dag" },
-      { id: 3, text: "Verbruik per week"},
-      { id: 4, text: "Verbruik per maand" },
+      { id: 1, text: "Realtime verbruik"},
+      { id: 2, text: "Verbruik per uur" },
+      { id: 3, text: "Verbruik per dag" },
+      { id: 4, text: "Verbruik per week"},
+      { id: 5, text: "Verbruik per maand"},
     ];
   }
 
@@ -38,15 +39,18 @@ export class AppComponent {
 
   itemClick(e : any) {
     if(e.itemData.id == 1) {
-      this.home?.loadNewDataSource(GraphType.Hour);
+      this.home?.loadNewDataSource(GraphType.Realtime);
     }
     else if(e.itemData.id == 2) {
-      this.home?.loadNewDataSource(GraphType.Day);
+      this.home?.loadNewDataSource(GraphType.Hour);
     }
     else if(e.itemData.id == 3) {
-      this.home?.loadNewDataSource(GraphType.Week);
+      this.home?.loadNewDataSource(GraphType.Day);
     }
     else if(e.itemData.id == 4) {
+      this.home?.loadNewDataSource(GraphType.Week);
+    }
+    else if(e.itemData.id == 5) {
       this.home?.loadNewDataSource(GraphType.Month);
     }
   }

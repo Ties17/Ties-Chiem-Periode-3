@@ -1,6 +1,7 @@
 export enum GraphType {
-    Hour,
-    Day,
-    Week,
-    Month,
-  }
+  Realtime,
+  Hour,
+  Day,
+  Week,
+  Month,
+}

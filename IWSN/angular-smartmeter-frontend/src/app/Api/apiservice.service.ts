@@ -10,6 +10,7 @@ import { SensorData } from '../Models/SensorData';
   providedIn: 'root'
 })
 export class ApiserviceService {
+  
 
   private readonly apiUrl : string = "http://localhost:3000";
 
@@ -23,6 +24,23 @@ export class ApiserviceService {
 
   getPowerData(): Observable<SmartMeterPowerData[]> {
     return this.http.get<SmartMeterPowerData[]>(this.apiUrl + "/powerdata/allData");
+  }
+
+  getPowerDataCustom(hours : number) : Observable<SmartMeterPowerData[]> {
+    let dateNow : Date = new Date();
+    dateNow.setHours(dateNow.getHours() + 1);
+    dateNow.setHours(dateNow.getHours() - hours);
+    const epochNow = Math.floor((dateNow.getTime() / 1000));
+    return this.http.get<SmartMeterPowerData[]>(this.apiUrl + "/powerdata/dataByTime/?time=" + epochNow);
+  }
+
+  getPowerDataLastMinute() : Observable<SmartMeterPowerData[]> {
+    let dateNow : Date = new Date();
+    dateNow.setHours(dateNow.getHours() + 1);
+    dateNow.setMinutes(dateNow.getMinutes() - 1);
+    const epochNow = Math.floor((dateNow.getTime() / 1000));
+
+    return this.http.get<SmartMeterPowerData[]>(this.apiUrl + "/powerdata/dataByTime/?time=" + epochNow);
   }
 
   getPowerDataLastHour(): Observable<SmartMeterPowerData[]> {

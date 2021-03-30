@@ -6,8 +6,9 @@ import { AppComponent } from './app.component';
 
 import { HomeComponent } from './home/home.component';
 import { DxChartModule } from 'devextreme-angular/ui/chart';
-import { DxCheckBoxModule, DxCircularGaugeModule, DxDrawerModule, DxListModule, DxMenuModule, DxNumberBoxModule, DxPieChartModule, DxSelectBoxModule, DxTextBoxModule, DxToolbarModule, DxTreeViewModule } from 'devextreme-angular';
+import { DxButtonModule, DxCheckBoxModule, DxCircularGaugeModule, DxDrawerModule, DxListModule, DxMenuModule, DxNumberBoxModule, DxPieChartModule, DxRangeSelectorModule, DxSelectBoxModule, DxSliderModule, DxTextBoxModule, DxToolbarModule, DxTreeViewModule } from 'devextreme-angular';
 import { HttpClientModule } from '@angular/common/http';
+import { DxoBehaviorModule } from 'devextreme-angular/ui/nested';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,11 @@ import { HttpClientModule } from '@angular/common/http';
     DxListModule,
     DxTextBoxModule,
     DxNumberBoxModule,
-    DxTreeViewModule
+    DxTreeViewModule,
+    DxSliderModule,
+    DxoBehaviorModule,
+    DxRangeSelectorModule,
+    DxButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

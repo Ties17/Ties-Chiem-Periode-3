@@ -20,6 +20,12 @@ export class HomeComponent implements OnInit {
   kwValue : number = 0;
   valueFieldSeries : string = "watt";
   tickInterval : number = 0;
+  costVisible : boolean = false;
+  isRealtime : boolean = false;
+
+  realTimeExists : boolean = false;
+  graphType : string = "bar";
+  isSliderVisible : boolean = false;
 
   Users = ["Ties", "Chiem"]
   selectedUser!: String;
@@ -28,6 +34,8 @@ export class HomeComponent implements OnInit {
   currentHum: number = 0;
   readingTime: Date = new Date();
   observableTime: Subject<string> = new Subject<string>();
+
+  sliderAmountOfHours : number = 1;
 
 
   constructor(private apiService: ApiserviceService, private graphService : GraphService) {
@@ -109,6 +117,34 @@ export class HomeComponent implements OnInit {
   loadNewDataSource(graphType : GraphType) {
 
     switch(graphType) {
+
+      case GraphType.Realtime:
+        
+        if(!this.realTimeExists) {
+          interval(10000).subscribe(intervalValue => { 
+            if(this.isRealtime) {
+              this.apiService.getPowerDataLastMinute().subscribe(value => {
+                this.dataSource = this.graphService.dataToGraph(value, this.graphService.getDateForSecondsGraph(10, 6), "seconds");
+                this.kwValue = this.graphService.dataSourceToKWH(this.dataSource);
+              });
+            }
+          });
+        }
+
+        this.apiService.getPowerDataLastMinute().subscribe(value => {
+          this.dataSource = this.graphService.dataToGraph(value, this.graphService.getDateForSecondsGraph(10, 6), "seconds");
+          this.kwValue = this.graphService.dataSourceToKWH(this.dataSource);
+        });
+        
+        this.costVisible = false;
+        this.valueFieldSeries = "watt";
+        this.tickInterval = 10;
+        this.isRealtime = true;
+        this.realTimeExists = true;
+        this.graphType = "spline";
+        this.isSliderVisible = false;
+
+        break;
       case GraphType.Hour:
 
         this.apiService.getPowerDataLastHour().subscribe(value => {
@@ -117,36 +153,49 @@ export class HomeComponent implements OnInit {
         });
         this.valueFieldSeries = "watt";
         this.tickInterval = 1000;
+        this.costVisible = false;
+        this.graphType = "bar";
+        this.isRealtime = false;
+        this.isSliderVisible = false;
 
         break;
       case GraphType.Day:
-
         this.apiService.getPowerDataDay().subscribe(value => {
           this.dataSource = this.graphService.dataToGraph(value, this.graphService.getDatesForHourGraph(60, 24), "hours");
           this.kwValue = this.graphService.dataSourceToKWH(this.dataSource);
         });
         this.valueFieldSeries = "watt";
         this.tickInterval = 1000;
+        this.costVisible = false;
+        this.graphType = "bar";
+        this.isRealtime = false;
+        this.isSliderVisible = true;
 
         break;
       case GraphType.Week:
-        
         this.apiService.getPowerDataWeek().subscribe(value => {
           this.dataSource = this.graphService.dataToGraph(value, this.graphService.getDatesForDaysGraph(1, 7), "days");
           this.kwValue = this.graphService.dataSourceToKWH(this.dataSource);
         });
         this.valueFieldSeries = "KwH";
         this.tickInterval = 5;
+        this.costVisible = true;
+        this.graphType = "bar";
+        this.isRealtime = false;
+        this.isSliderVisible = false;
 
         break;
       case GraphType.Month:
-        
         this.apiService.getPowerDataMonth().subscribe(value => {
           this.dataSource = this.graphService.dataToGraph(value, this.graphService.getDatesForDaysGraph(1, 30), "days");
           this.kwValue = this.graphService.dataSourceToKWH(this.dataSource);
         });
         this.valueFieldSeries = "KwH";
         this.tickInterval = 5;
+        this.costVisible = true;
+        this.graphType = "bar";
+        this.isRealtime = false;
+        this.isSliderVisible = false;
 
         break;
     }
@@ -167,5 +216,22 @@ export class HomeComponent implements OnInit {
   userSelected(event: any): void {
     this.selectedUser=event.value;
     this.requestSensorData();
+  }
+
+  onSliderValueChanged(event : any) {
+    this.sliderAmountOfHours = event.value;
+  }
+
+  onSliderButtonClick(event : any) {
+    this.apiService.getPowerDataCustom(this.sliderAmountOfHours).subscribe(value => {
+      this.dataSource = this.graphService.dataToGraph(value, this.graphService.getDatesForHourGraph(60, this.sliderAmountOfHours), "hours");
+      this.kwValue = this.graphService.dataSourceToKWH(this.dataSource);
+    });
+    this.valueFieldSeries = "watt";
+    this.tickInterval = 1000;
+    this.costVisible = false;
+    this.graphType = "bar";
+    this.isRealtime = false;
+    this.isSliderVisible = true;
   }
 }

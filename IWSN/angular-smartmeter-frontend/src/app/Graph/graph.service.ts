@@ -31,7 +31,22 @@ export class GraphService {
         return;
       }
 
-      if(dataFragmentTime.getTime() > dates[currentDate].getTime()) {
+      if(keyType == "seconds") {
+        let key : string = this.generateGraphKey(dates, currentDate, keyType);
+        let watt : number = 0;
+        if(data.Actual_electricity_power_delivered_plus != null)
+        {
+          let powerDeliverd = this.powerDeliveredToNumber(data.Actual_electricity_power_delivered_plus);
+          watt = (powerDeliverd * 1000); //to watt
+        }
+        
+        let graphDataSingle : SmartMeterDataGraph = new SmartMeterDataGraph();
+        graphDataSingle.day = key;
+        graphDataSingle.watt = +watt.toFixed(0);
+        graphData.push(graphDataSingle);
+        currentDate++;
+      }
+      else if(dataFragmentTime.getTime() > dates[currentDate].getTime()) {
 
         let key : string = this.generateGraphKey(dates, currentDate, keyType);
         let watt : number = this.generateWatt(dataGroup);
@@ -43,7 +58,6 @@ export class GraphService {
         if(keyType == "days") { //wh to kwh
           graphDataSingle.watt = +(graphDataSingle.watt / 1000).toFixed(1);
           graphDataSingle.cost = +(graphDataSingle.watt * energyCost).toFixed(2);
-          console.log(graphDataSingle.cost);
         }
         
         graphData.push(graphDataSingle);
@@ -123,6 +137,21 @@ export class GraphService {
     return powerDeliverd;
   }
 
+  getDateForSecondsGraph(interval : number, amountOfSeconds : number) : Date[] {
+    let dates : Date[] = [];
+    let date : Date = new Date();
+    date.setMinutes(date.getMinutes() - 1);
+
+    for(let i = 0; i < amountOfSeconds; i++) {
+      let dateToPush = new Date()
+      dateToPush.setTime(date.getTime());
+      dateToPush.setSeconds(date.getSeconds() + (interval * i));
+      dates.push(dateToPush);
+    }
+  
+    return dates;
+  }
+
   getDatesForHourGraph(interval : number, amountOfHours : number): Date[] {
     let dates : Date[] = [];
     let date : Date = new Date();
@@ -162,6 +191,23 @@ export class GraphService {
   }
 
   generateGraphKey(dates: Date[], currentDate: number, keyType : string): string {
+
+    if(keyType == "seconds") {
+      let hours = dates[currentDate].getHours().toString();
+      if (dates[currentDate].getHours() < 10) {
+        hours = '0' + hours;
+      }
+      let minutes = dates[currentDate].getMinutes().toString();
+      if (dates[currentDate].getMinutes() < 10) {
+        minutes = '0' + minutes;
+      }
+
+      let seconds = dates[currentDate].getSeconds().toString();
+      if (dates[currentDate].getSeconds() < 10) {
+        seconds = '0' + seconds;
+      }
+      return hours + ":" + minutes + ":" + seconds;
+    }
 
     if(keyType == "days") { //keys become days
       let dayNumber = dates[currentDate].getDate().toString();
