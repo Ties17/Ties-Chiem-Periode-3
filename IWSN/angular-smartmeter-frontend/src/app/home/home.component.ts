@@ -35,7 +35,7 @@ export class HomeComponent implements OnInit {
   readingTime: Date = new Date();
   observableTime: Subject<string> = new Subject<string>();
 
-  sliderAmountOfHours : number = 1;
+  sliderAmountOfHours : number = 24;
 
 
   constructor(private apiService: ApiserviceService, private graphService : GraphService) {
